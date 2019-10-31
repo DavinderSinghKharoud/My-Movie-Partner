@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".Upload_Image">
+
+
+    <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/upload_pic"
+        android:layout_width="182dp"
+        android:layout_height="186dp"
+        android:src="@mipmap/ic_launcher"
+        android:layout_centerHorizontal="true"
+        app:civ_border_width="2dp"
+        android:layout_margin="5dp"/>
+
+    <Button
+        android:id="@+id/choose_photo_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Choose Photo"
+        android:textColor="@android:color/white"
+        android:background="@drawable/drawable_edit_text"
+        android:layout_below="@id/upload_pic"/>
+</RelativeLayout>

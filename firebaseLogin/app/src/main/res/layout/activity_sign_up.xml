@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".MainActivity">
+
+    <EditText
+        android:id="@+id/signUpEmail"
+        android:layout_width="232dp"
+        android:layout_height="60dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="200dp"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:text="email" />
+
+    <EditText
+        android:id="@+id/signUpPassword"
+        android:layout_width="232dp"
+        android:layout_height="54dp"
+        android:layout_gravity="center"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:text="password" />
+
+    <EditText
+        android:id="@+id/Address"
+        android:layout_width="232dp"
+        android:layout_height="54dp"
+        android:layout_gravity="center"
+        android:ems="10"
+        android:gravity="center"
+        android:inputType="textPersonName"
+        android:text="Address" />
+
+
+    <Button
+        android:id="@+id/SignUP"
+        android:layout_width="100dp"
+        android:layout_height="81dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="SIGN UP" />
+
+    <Button
+        android:id="@+id/logInPage"
+        android:layout_width="122dp"
+        android:layout_height="65dp"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:text="Go to LOG IN" />
+
+
+</LinearLayout>

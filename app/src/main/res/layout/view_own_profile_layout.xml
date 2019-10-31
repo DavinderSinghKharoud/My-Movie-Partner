@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:elevation="3dp"
+    android:orientation="vertical"
+    app:cardBackgroundColor="#FFF"
+    app:cardCornerRadius="3dp"
+    app:cardUseCompatPadding="true"
+    app:contentPadding="5dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <de.hdodenhof.circleimageview.CircleImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:id="@+id/profile_picture_own_Post"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_margin="5dp"
+            android:src="@mipmap/ic_launcher"
+            app:civ_border_width="2dp" />
+
+        <TextView
+            android:id="@+id/my_post_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="40dp"
+            android:layout_toRightOf="@+id/profile_picture_own_Post"
+            android:text="TextView name"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/my_post_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/my_post_name"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:text="TextView title"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/my_post_description"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/my_post_title"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="5dp"
+            android:text="TextView description"
+            android:textColor="@android:color/black"
+            android:textSize="20sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/my_post_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/my_post_description"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="1dp"
+            android:text="TextView date"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/my_post_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/my_post_description"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="1dp"
+            android:text="TextView time"
+            android:textColor="@color/colorPrimary"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/my_post_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/my_post_date"
+            android:layout_centerHorizontal="true"
+            android:text="TextView location"
+            android:textColor="@color/colorPrimary"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/my_post_gender"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/my_post_location"
+            android:layout_centerHorizontal="true"
+            android:text="TextView gender"
+            android:textColor="@android:color/black"
+            android:textSize="18sp"
+            android:textStyle="italic" />
+
+        <TextView
+            android:id="@+id/my_post_postedOn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/my_post_gender"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:text="TextView posted on"
+            android:textColor="@android:color/black"
+            android:textSize="14sp"
+            android:textStyle="italic" />
+
+        <ImageView
+            android:id="@+id/delete_my_post"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_below="@id/my_post_gender"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/delete"
+            android:layout_marginLeft="15dp"
+            android:layout_alignParentEnd="true" />
+
+        <ImageView
+            android:id="@+id/edit_my_post"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:layout_below="@id/my_post_gender"
+            android:layout_toStartOf="@id/delete_my_post"
+            android:src="@drawable/edit"
+            android:layout_toLeftOf="@id/delete_my_post" />
+
+    </RelativeLayout>
+</com.google.android.material.card.MaterialCardView>

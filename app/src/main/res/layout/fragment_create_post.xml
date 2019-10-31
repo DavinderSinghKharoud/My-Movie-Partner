@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".CreatePost">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="25dp">
+
+            <TextView
+                android:id="@+id/textviewCP"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
+                android:text="Create Post"
+                android:textColor="@color/colorPrimary"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:textCursorDrawable="@android:color/white"
+                android:layout_below="@+id/textviewCP"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/drawable_edit_text"
+                android:drawableLeft="@drawable/title"
+                android:hint="Title"
+                android:maxLength="20"
+                android:paddingLeft="20dp"
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:inputType="text"
+                android:maxLines="1"/>
+
+            <EditText
+                android:id="@+id/descriptionbox"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:layout_below="@+id/title"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/squre_edittext"
+                android:drawableLeft="@drawable/description"
+                android:drawablePadding="5dp"
+                android:ellipsize="start"
+                android:hint="Description"
+                android:maxLines="100"
+                android:paddingLeft="5dp"
+                android:textColorHint="@color/colorPrimary" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="20dp"
+                android:gravity="center_horizontal">
+
+                <Button
+                    android:id="@+id/date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/drawable_edit_text"
+                    android:drawableLeft="@drawable/date"
+                    android:drawablePadding="5dp"
+                    android:hint="Date"
+                    android:padding="10dp"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+
+                <Button
+                    android:id="@+id/time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:background="@drawable/drawable_edit_text"
+                    android:drawableLeft="@drawable/time"
+                    android:hint="Time"
+                    android:padding="10dp"
+                    android:textColor="@android:color/white"
+                    android:textColorHint="@android:color/white" />
+            </LinearLayout>
+
+            <EditText
+                android:id="@+id/post_location"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="20dp"
+                android:background="@drawable/squre_edittext"
+                android:drawableLeft="@drawable/location"
+                android:drawablePadding="5dp"
+                android:hint="Location"
+                android:maxLength="40"
+                android:paddingStart="10dp"
+                android:paddingLeft="10dp"
+                android:textColorHint="@color/colorPrimary"
+                android:inputType="text"
+                android:maxLines="1"/>
+
+            <Button
+                android:id="@+id/postbtn"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="25dp"
+                android:background="@drawable/drawable_edit_text"
+                android:drawableLeft="@drawable/upload"
+                android:drawablePadding="5dp"
+                android:paddingLeft="15dp"
+                android:paddingRight="25dp"
+                android:text="Post"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+
+</ScrollView>

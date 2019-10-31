@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">MyMoviePartner</string>
+
+    <!-- Creating String for navigation bar closing and opening -->
+    <string name="Open">NavBar Open</string>
+    <string name="Close">NavBar Close</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="names">
+        <item>By title</item>
+        <item>By user name</item>
+        <item>By location</item>
+        <item>By gender</item>
+    </string-array>
+
+</resources>
