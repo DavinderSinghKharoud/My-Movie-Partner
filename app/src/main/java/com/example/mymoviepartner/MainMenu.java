@@ -210,8 +210,8 @@ public class MainMenu extends AppCompatActivity implements
             case R.id.nav_share:
                 Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                String shareBody = "Your body here";
-                String shareSubject = "Your subject here";
+                String shareBody = "Checkout our MyMoviePartner application from the GitHub: \n https://github.com/DavinderSinghKharoud/My-Movie-Partner";
+                String shareSubject = "Checkout our MyMoviePartner application from the GitHub";
 
                 sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
                 sharingIntent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);

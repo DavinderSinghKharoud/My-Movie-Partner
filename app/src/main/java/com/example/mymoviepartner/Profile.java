@@ -164,6 +164,7 @@ public class Profile extends Fragment {
                         //creating progress dialogue
                         progressDialog.setMessage("Deleting your account...");
                         progressDialog.show();
+                        progressDialog.setCancelable(false);
 
                         fUser.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
@@ -197,16 +198,7 @@ public class Profile extends Fragment {
                                 getActivity().finish();
                             }
                         });
-                        fUser.delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Void> task) {
-                                if (task.isSuccessful()) {
 
-                                } else {
-                                    Toast.makeText(getContext(), task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
 
 
                     }
