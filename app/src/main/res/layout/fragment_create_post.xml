@@ -50,12 +50,12 @@
                 android:layout_below="@+id/title"
                 android:layout_marginTop="15dp"
                 android:background="@drawable/squre_edittext"
-                android:drawableLeft="@drawable/description"
                 android:drawablePadding="5dp"
                 android:ellipsize="start"
                 android:hint="Description"
-                android:maxLines="100"
+                android:maxLines="10"
                 android:paddingLeft="5dp"
+                android:gravity="top|left"
                 android:textColorHint="@color/colorPrimary" />
 
             <LinearLayout

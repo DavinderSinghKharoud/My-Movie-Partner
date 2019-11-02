@@ -31,6 +31,7 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
@@ -87,6 +88,10 @@ public class CreatePost extends Fragment {
         progressDialog = new ProgressDialog(getContext());
 
 
+        //Referencing Navigation View and checking navigation menu item as home
+        NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
+        navigationView.setCheckedItem(R.id.nav_create_post);
+
         //getting bundle of data from user_Own_Posts fragment
         data = getArguments();
 
@@ -97,6 +102,8 @@ public class CreatePost extends Fragment {
         if (fragmentData != null) {
             //changing to true, for letting know other methods
             checkIsEditFragment = true;
+
+            navigationView.setCheckedItem(R.id.nav_profile);
 
             //getting value from the previous fragment
             String title = getArguments().getString("title");
@@ -178,12 +185,15 @@ public class CreatePost extends Fragment {
                     return;
                 }
                 //checking if the date button is clicked
-                if (checkDateButtonClicked == false) {
+                String textDate=postDate.getText().toString();
+                if (textDate.equals("")) {
                     Toast.makeText(getContext(), "Please select the available date", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 //checking if the time button is clicked
-                if (checkTimeButtonClicked == false) {
+
+                String textTime=postTime.getText().toString();
+                if (textTime.equals("")) {
                     Toast.makeText(getContext(), "Please select the available time", Toast.LENGTH_SHORT).show();
                     return;
                 }

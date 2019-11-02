@@ -1,6 +1,7 @@
 package com.example.mymoviepartner.ViewHolders;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
 
@@ -28,6 +29,7 @@ public class Post_ViewHolder extends RecyclerView.ViewHolder {
 
     public void setDetails(Context context, String title, String description, String date,
                            String time, String location, String gender, String name, String imageURl, String postedON, boolean isAdded) {
+
         //Views
         mTitle = mView.findViewById(R.id.textView2_title);
         mDesc = mView.findViewById(R.id.textView3_description);

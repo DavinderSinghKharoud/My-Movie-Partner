@@ -1,17 +1,13 @@
 package com.example.mymoviepartner;
 
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
-import androidx.core.view.MenuItemCompat;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -24,6 +20,7 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.mymoviepartner.ViewHolders.Post_ViewHolder;
+import com.example.mymoviepartner.ViewHolders.allPosts_Adapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.navigation.NavigationView;
@@ -34,8 +31,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.ServiceConfigurationError;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 
@@ -55,6 +53,11 @@ public class HomeFragment extends Fragment {
     private LinearLayoutManager mLayoutManager;
     private Spinner spinner;
 
+    //second
+    private allPosts_Adapter allPosts_adapter;
+    private ArrayList<PostModel> listPost = new ArrayList<>();
+    private ArrayList<PostModel> copyList;
+
 
     public HomeFragment() {
         // Required empty public constructor
@@ -67,31 +70,72 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-
-        //Clearing the back stack of fragments
-        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+        //referencing recycler view
+        recyclerView = view.findViewById(R.id.my_recycler_view);
 
         //setting it to true, to setup the custom menu to the application
         setHasOptionsMenu(true);
 
-        //spinner starts
-        spinner = view.findViewById(R.id.spinner1);
-
-        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(view.getContext(),
-                android.R.layout.simple_list_item_1,
-                getResources().getStringArray((R.array.names)));
-
-        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-
-        spinner.setAdapter(arrayAdapter);
-        //spinner ends
+        //setting up spinner(Drop down menu)
+        setUpSpinner(view);
 
         //Referencing Navigation View and checking navigation menu item as home
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_home);
 
+
+        //getting reference from the database
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        mRef = mFirebaseDatabase.getReference("Posts");
+
+
+        //fetching data from the database
+        fetchData();
+
+        //setting up recycler view
+        setUpRecyclerView();
+
+        return view;
+    }
+
+
+
+    /**
+     * fetching data from the firebase and adding to the list
+     */
+    private void fetchData() {
+
+
+        mRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //clearing the list
+                listPost.clear();
+
+                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                    PostModel postModel = postSnapshot.getValue(PostModel.class);
+                    listPost.add(postModel);
+                }
+                copyList = new ArrayList<>(listPost);
+                allPosts_adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                Toast.makeText(getContext(),databaseError.toString(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+    }
+
+    /**
+     * setting up recycler view
+     */
+    private  void setUpRecyclerView(){
         //referencing recyclerView and setting fixed size
-        recyclerView = view.findViewById(R.id.my_recycler_view);
         recyclerView.setHasFixedSize(true);
 
         //setting up the layout manager and setting the latest post added at the top
@@ -99,193 +143,37 @@ public class HomeFragment extends Fragment {
         mLayoutManager.setReverseLayout(true);
         mLayoutManager.setStackFromEnd(true);
 
-        //setting layout manager
-        recyclerView.setLayoutManager(mLayoutManager);
 
-        //getting reference from the database
-        mFirebaseDatabase = FirebaseDatabase.getInstance();
-        mRef = mFirebaseDatabase.getReference("Posts");
-
-        //Creating query and getting data
-        createQuery(mRef);
-
-        mFirebaseAdapter.startListening();
-        //setting up the adapter
-        recyclerView.setAdapter(mFirebaseAdapter);
-
-        return view;
-    }
-
-    /**
-     * setting up firebase adapter to fetch and display the data
-     *
-     * @param mRef
-     */
-    private void createQuery(DatabaseReference mRef) {
-
-        //setting firebase recyclerOptions
-        options = new FirebaseRecyclerOptions.Builder<PostModel>()
-                .setQuery(mRef, PostModel.class).build();
-
-        //Setting adapter
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<PostModel, Post_ViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull final Post_ViewHolder post_viewHolder, int i, @NonNull final PostModel postModel) {
-                //getting user id
-                final String userID = postModel.getUser_id();
-
-                DatabaseReference userDetails = FirebaseDatabase.getInstance().getReference("Users").child(userID);
-                userDetails.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        //getting the user details and saving in the user model
-                        userModel mUser = dataSnapshot.getValue(userModel.class);
-
-
-                        //getting time of the post from the current time
-                        getPostedTime(postModel);
-
-
-                        //just to make sure fragment is loaded before the data is passed
-                        boolean isAdded = isAdded();
-
-                        try {
-                            //sending the values to the post holder, so that they can be setup in the views.
-                            post_viewHolder.setDetails(getContext(), postModel.getTitle(),
-                                    postModel.getDescription(), postModel.getDate(), postModel.getTime(),
-                                    postModel.getLocation(), mUser.getGender(), mUser.getName(),
-                                    mUser.getImageURL(), TimePostedOn, isAdded);
-                        } catch (Exception e) {
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
-            }
-
-            @NonNull
-            @Override
-            public Post_ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_profile_layout, parent, false);
-
-
-                return new Post_ViewHolder(view);
-            }
-        };
-    }
-
-    /**
-     * To get the time difference of the posts from the current time
-     *
-     * @param postModel
-     */
-    private void getPostedTime(PostModel postModel) {
-        //getting the time, when the post was created
-        long TimeOfPost = postModel.getTime_stamp();
-
-        //getting the difference between the current time and the post time in milliseconds
-        long msDiff = Calendar.getInstance().getTimeInMillis() - TimeOfPost;
-
-        //getting the difference of days between today and when the post created
-        String daysDiff = String.valueOf(TimeUnit.MILLISECONDS.toDays(msDiff));
-        //getting the difference of hours between today and when the post created
-        String hoursDiff = String.valueOf(TimeUnit.MILLISECONDS.toHours(msDiff));
-        //getting the difference of minutes between today and when the post created
-        String minutesDiff = String.valueOf(TimeUnit.MILLISECONDS.toMinutes(msDiff));
-
-        //setting up if condition to get the final posted time
-        if (!daysDiff.equals("0")) {
-            //if the post is not created on the same day
-            this.TimePostedOn = "Posted: " + daysDiff + " day ago";
-        } else if (!hoursDiff.equals("0")) {
-            //if the post is created not in the same hour
-            this.TimePostedOn = "Posted: " + hoursDiff + " h ago";
-        } else if (hoursDiff.equals("0")) {
-            //when the post is created in the same hour, so we add the minute difference
-            this.TimePostedOn = "Posted: " + minutesDiff + " min ago";
-        }
-    }
-
-    /**
-     * This method will filter the posts, according to user typed text in the search bar.
-     *
-     * @param search_text
-     * @param type
-     */
-    private void firebaseSearch(String search_text, String type) {
-        String user_text = search_text;
-
-        Query firebaseSearchQuery = mRef.orderByChild(type).startAt(user_text).endAt(user_text + "\uf8ff");
-
-        //setting firebase recyclerOptions
-        options = new FirebaseRecyclerOptions.Builder<PostModel>()
-                .setQuery(firebaseSearchQuery, PostModel.class).build();
-
-
-        //Setting adapter
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<PostModel, Post_ViewHolder>(options) {
-            @Override
-            protected void onBindViewHolder(@NonNull final Post_ViewHolder post_viewHolder, int i, @NonNull final PostModel postModel) {
-                //getting user id
-                final String userID = postModel.getUser_id();
-
-                DatabaseReference userDetails = FirebaseDatabase.getInstance().getReference("Users").child(userID);
-                userDetails.addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                        //getting the user details and saving in the user model
-                        userModel mUser = dataSnapshot.getValue(userModel.class);
-
-
-                        //getting time of the post from the current time
-                        getPostedTime(postModel);
-
-
-                        //just to make sure fragment is loaded before the data is passed
-                        boolean isAdded = isAdded();
-
-                        try {
-                            //sending the values to the post holder, so that they can be setup in the views.
-                            post_viewHolder.setDetails(getContext(), postModel.getTitle(),
-                                    postModel.getDescription(), postModel.getDate(), postModel.getTime(),
-                                    postModel.getLocation(), mUser.getGender(), mUser.getName(),
-                                    mUser.getImageURL(), TimePostedOn, isAdded);
-                        } catch (Exception e) {
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError databaseError) {
-                        Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-
-            }
-
-            @NonNull
-            @Override
-            public Post_ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-                View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_profile_layout, parent, false);
-
-
-                return new Post_ViewHolder(view);
-            }
-        };
-
+        allPosts_adapter = new allPosts_Adapter(listPost, getContext(), isAdded());
 
         //setting layout manager
         recyclerView.setLayoutManager(mLayoutManager);
+        recyclerView.setAdapter(allPosts_adapter);
 
-        mFirebaseAdapter.startListening();
-        //setting up the adapter
-        recyclerView.setAdapter(mFirebaseAdapter);
+
     }
+
+    /**
+     * setting up spinner
+     * @param view
+     */
+    private void setUpSpinner(View view){
+
+        //getting reference
+        spinner = view.findViewById(R.id.spinner1);
+
+        //setting up adapter
+        ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(view.getContext(),
+                android.R.layout.simple_list_item_1,
+                getResources().getStringArray((R.array.names)));
+
+        arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        //setting adapter
+        spinner.setAdapter(arrayAdapter);
+
+    }
+
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
@@ -299,30 +187,57 @@ public class HomeFragment extends Fragment {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
+
+                //getting drop down item selected
                 Integer index = spinner.getSelectedItemPosition();
-                if (index == 2) {
 
-                    firebaseSearch(query, "location");
+
+                if (index == 1) {
+                    //By userName
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getUserNameFilter().filter(query);
+                }
+                else if (index == 2) {
+                    //By location
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getLocationFilter().filter(query);
+
                 } else if (index == 3) {
-                    firebaseSearch(query, "gender");
+                    //By Gender
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getGenderFilter().filter(query);
                 } else {
-
-                    firebaseSearch(query, "title");
+                    //By default(title)
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getFilter().filter(query);
                 }
                 return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
+                //getting drop down item selected
                 Integer index = spinner.getSelectedItemPosition();
-                if (index == 2) {
 
-                    firebaseSearch(newText, "location");
+
+                if (index == 1) {
+                    //By userName
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getUserNameFilter().filter(newText);
+                }
+                else if (index == 2) {
+                    //By location
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getLocationFilter().filter(newText);
+
                 } else if (index == 3) {
-                    firebaseSearch(newText, "gender");
+                    //By Gender
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getGenderFilter().filter(newText);
                 } else {
-
-                    firebaseSearch(newText, "title");
+                    //By default(title)
+                    allPosts_adapter.setmPostListFull(copyList);
+                    allPosts_adapter.getFilter().filter(newText);
                 }
                 return true;
             }
@@ -332,29 +247,22 @@ public class HomeFragment extends Fragment {
 
     }
 
+
     //private void displayData
     @Override
     public void onStart() {
         super.onStart();
-        if (mFirebaseAdapter != null) {
-            mFirebaseAdapter.startListening();
-        }
+
     }
 
     @Override
     public void onStop() {
         super.onStop();
-        if (mFirebaseAdapter != null) {
-            mFirebaseAdapter.stopListening();
-        }
+
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        if (mFirebaseAdapter != null) {
-            //setting layout manager
-            mFirebaseAdapter.startListening();
-        }
     }
 }

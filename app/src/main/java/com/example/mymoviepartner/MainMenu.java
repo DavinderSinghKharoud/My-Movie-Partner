@@ -172,9 +172,6 @@ public class MainMenu extends AppCompatActivity implements
 
         switch (menuItem.getItemId()) {
 
-
-
-
             case R.id.nav_home:
                 if(!navigationView.getCheckedItem().getTitle().equals("Home")){
                     getSupportFragmentManager().beginTransaction()
@@ -199,12 +196,17 @@ public class MainMenu extends AppCompatActivity implements
             //case R.id.nav_messages:
             //  break;
             case R.id.nav_profile:
-                //Adding again the home fragment and replacing it with profile fragment
-                getSupportFragmentManager().beginTransaction()
-                        //.add(new HomeFragment(),"HomeFragment")
-                        .addToBackStack("HomeFragment")
-                        .replace(R.id.fragment_container,
-                                new Profile(),TAG_FRAGMENT).commit();
+                String checkedItem= (String) navigationView.getCheckedItem().getTitle();
+                if(!checkedItem.equals("Profile")){
+
+                    Profile profile=new Profile();
+
+                    //Adding again the home fragment and replacing it with profile fragment
+                    getSupportFragmentManager().beginTransaction()
+                            .addToBackStack(null)
+                            .replace(R.id.fragment_container,
+                                    profile).commit();
+                }
 
                 break;
             case R.id.nav_share:
