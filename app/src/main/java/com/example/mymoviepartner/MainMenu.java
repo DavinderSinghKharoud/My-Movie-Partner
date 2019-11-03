@@ -34,7 +34,7 @@ public class MainMenu extends AppCompatActivity implements
     //Attributes for drawerLayout and actionBarDrawerToggle
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle mToggle;
-    private TextView nav_name,nav_email;
+    private TextView nav_name, nav_email;
     private CircleImageView nav_profile_pic;
     private FirebaseDatabase firebaseDatabase;
     private DatabaseReference userDetails;
@@ -54,21 +54,21 @@ public class MainMenu extends AppCompatActivity implements
 
 
         //Referencing text views
-        nav_name=(TextView)header.findViewById(R.id.navigation_name);
-        nav_email=(TextView) header.findViewById(R.id.navigation_email);
-        nav_profile_pic=(CircleImageView)header.findViewById(R.id.navigation_image);
+        nav_name = (TextView) header.findViewById(R.id.navigation_name);
+        nav_email = (TextView) header.findViewById(R.id.navigation_email);
+        nav_profile_pic = (CircleImageView) header.findViewById(R.id.navigation_image);
 
 
         //Getting user and firebase data instance
         mAuth = FirebaseAuth.getInstance();
-        firebaseDatabase=FirebaseDatabase.getInstance();
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         //Getting current user logged IN, to get the email details
-        currentUser=mAuth.getCurrentUser();
+        currentUser = mAuth.getCurrentUser();
 
 
         //Getting the user details with his specific ID in the realtime database
-        userDetails=firebaseDatabase.getReference("Users").child(mAuth.getUid());
+        userDetails = firebaseDatabase.getReference("Users").child(mAuth.getUid());
 
 
         //checking logged in user;
@@ -80,7 +80,7 @@ public class MainMenu extends AppCompatActivity implements
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.fragment_container, new HomeFragment(),"home").commit();
+                    .replace(R.id.fragment_container, new HomeFragment(), "home").commit();
 
             navigationView.setCheckedItem(R.id.nav_home);
 
@@ -112,15 +112,13 @@ public class MainMenu extends AppCompatActivity implements
         userDetails.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userModel mUser=dataSnapshot.getValue(userModel.class);
+                userModel mUser = dataSnapshot.getValue(userModel.class);
                 //Setting name
                 try {
-                nav_name.setText(mUser.getName());
+                    nav_name.setText(mUser.getName());
 
-                //Setting email
-                nav_email.setText(currentUser.getEmail());
-
-
+                    //Setting email
+                    nav_email.setText(currentUser.getEmail());
 
 
                     if (mUser.getImageURL().equals("default")) {
@@ -128,7 +126,7 @@ public class MainMenu extends AppCompatActivity implements
                     } else {
                         Glide.with(getApplicationContext()).load(mUser.getImageURL()).into(nav_profile_pic);
                     }
-                }catch (Exception e){
+                } catch (Exception e) {
 
                 }
 
@@ -137,7 +135,7 @@ public class MainMenu extends AppCompatActivity implements
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-                Toast.makeText(getApplicationContext(),"User data does not exist",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), "User data does not exist", Toast.LENGTH_SHORT).show();
 
             }
         });
@@ -173,17 +171,18 @@ public class MainMenu extends AppCompatActivity implements
         switch (menuItem.getItemId()) {
 
             case R.id.nav_home:
-                if(!navigationView.getCheckedItem().getTitle().equals("Home")){
+                if (!navigationView.getCheckedItem().getTitle().equals("Home")) {
                     getSupportFragmentManager().beginTransaction()
                             .replace(R.id.fragment_container,
-                                    new HomeFragment()).commit();}
+                                    new HomeFragment()).commit();
+                }
                 break;
             case R.id.nav_create_post:
                 //create post object
-                CreatePost createPost=new CreatePost();
+                CreatePost createPost = new CreatePost();
                 //creating bundle and adding data
-                Bundle bundle=new Bundle();
-                bundle.putString("home","home");
+                Bundle bundle = new Bundle();
+                bundle.putString("home", "home");
                 createPost.setArguments(bundle);
 
                 //Adding again the home fragment and replacing it with profile fragment
@@ -191,15 +190,21 @@ public class MainMenu extends AppCompatActivity implements
                         //.add(new HomeFragment(),"HomeFragment")
                         .addToBackStack("HomeFragment")
                         .replace(R.id.fragment_container,
-                                createPost,TAG_FRAGMENT).commit();
+                                createPost, TAG_FRAGMENT).commit();
                 break;
-            //case R.id.nav_messages:
-            //  break;
-            case R.id.nav_profile:
-                String checkedItem= (String) navigationView.getCheckedItem().getTitle();
-                if(!checkedItem.equals("Profile")){
+            case R.id.nav_messages:
 
-                    Profile profile=new Profile();
+                //Adding again the home fragment and replacing it with message fragment
+                getSupportFragmentManager().beginTransaction().addToBackStack(null)
+                        .replace(R.id.fragment_container,
+                                new MessageScreen()).commit();
+
+                break;
+            case R.id.nav_profile:
+                String checkedItem = (String) navigationView.getCheckedItem().getTitle();
+                if (!checkedItem.equals("Profile")) {
+
+                    Profile profile = new Profile();
 
                     //Adding again the home fragment and replacing it with profile fragment
                     getSupportFragmentManager().beginTransaction()
@@ -235,7 +240,7 @@ public class MainMenu extends AppCompatActivity implements
 
     @Override
     public void onBackPressed() {
-      //  final Myfragment fragment = (Myfragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT);
+        //  final Myfragment fragment = (Myfragment) getSupportFragmentManager().findFragmentByTag(TAG_FRAGMENT);
 
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
@@ -244,12 +249,12 @@ public class MainMenu extends AppCompatActivity implements
         super.onBackPressed();
         /**
 
-        else {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.addCategory(Intent.CATEGORY_HOME);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            startActivity(intent);
-        }
+         else {
+         Intent intent = new Intent(Intent.ACTION_MAIN);
+         intent.addCategory(Intent.CATEGORY_HOME);
+         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+         startActivity(intent);
+         }
          **/
     }
 }

@@ -96,7 +96,7 @@ public class CreatePost extends Fragment {
         data = getArguments();
 
         //getting value from the previous fragment
-        String fragmentData = getArguments().getString("ownPosts");
+        String fragmentData = data.getString("ownPosts");
 
         //if the value is not null, it means fragment is called from the own post section
         if (fragmentData != null) {
@@ -359,16 +359,6 @@ public class CreatePost extends Fragment {
 
     }
 
-    /**
-     * To reset the all fields
-     */
-    private void clearFields() {
-        postTitle.setText("");
-        postDesc.setText("");
-        postLocation.setText("");
-        postDate.setText("");
-        postTime.setText("");
-    }
 
     /**
      * Setting up the values in the text fields

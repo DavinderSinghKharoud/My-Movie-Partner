@@ -1,6 +1,7 @@
 package com.example.mymoviepartner;
 
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -15,15 +16,21 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.example.mymoviepartner.ViewHolders.Models.MessageRooms;
 import com.example.mymoviepartner.ViewHolders.Post_ViewHolder;
 import com.example.mymoviepartner.ViewHolders.allPosts_Adapter;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -46,12 +53,13 @@ public class HomeFragment extends Fragment {
     private RecyclerView recyclerView;
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mRef;
-    private FirebaseRecyclerOptions<PostModel> options;
-    private FirebaseRecyclerAdapter<PostModel, Post_ViewHolder> mFirebaseAdapter;
+    private FirebaseUser currentUser;
+    private String RoomID = "default";
     //creating string, which will contain the posted time
     private String TimePostedOn = "Posted: ";
     private LinearLayoutManager mLayoutManager;
     private Spinner spinner;
+    private ProgressBar progressBar;
 
     //second
     private allPosts_Adapter allPosts_adapter;
@@ -85,19 +93,22 @@ public class HomeFragment extends Fragment {
 
 
         //getting reference from the database
+        currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mFirebaseDatabase = FirebaseDatabase.getInstance();
         mRef = mFirebaseDatabase.getReference("Posts");
 
 
+        //setting up progress bar
+        progressBar = view.findViewById(R.id.progress_bar_home);
+        progressBar.setVisibility(View.VISIBLE);
+
         //fetching data from the database
         fetchData();
-
         //setting up recycler view
         setUpRecyclerView();
 
         return view;
     }
-
 
 
     /**
@@ -109,6 +120,9 @@ public class HomeFragment extends Fragment {
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                //creating progress dialogue
+
+
                 //clearing the list
                 listPost.clear();
 
@@ -119,12 +133,15 @@ public class HomeFragment extends Fragment {
                 }
                 copyList = new ArrayList<>(listPost);
                 allPosts_adapter.notifyDataSetChanged();
+
+                //dismissing the progress bar
+                progressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                Toast.makeText(getContext(),databaseError.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -134,7 +151,7 @@ public class HomeFragment extends Fragment {
     /**
      * setting up recycler view
      */
-    private  void setUpRecyclerView(){
+    private void setUpRecyclerView() {
         //referencing recyclerView and setting fixed size
         recyclerView.setHasFixedSize(true);
 
@@ -150,14 +167,125 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(allPosts_adapter);
 
+        allPosts_adapter.setOnItemClickListener(new allPosts_Adapter.onClickMessageListener() {
+            @Override
+            public void onMessageClick(int position) {
+                //getting post model
+                PostModel postModel = listPost.get(position);
+                //getting userID
+                String postCreaterID = postModel.getUser_id();
+
+                createMessageRoom(postCreaterID);
+
+
+            }
+        });
+
 
     }
 
     /**
+     * Creating message room with the current userId and the ID of post creater
+     */
+    private void createMessageRoom(final String postCreaterID) {
+
+
+        final DatabaseReference mRoomRef = mFirebaseDatabase.getReference("MessageRooms");
+
+        mRoomRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    //getting messageRoom in the messageRoom object
+                    MessageRooms messageRooms = snapshot.getValue(MessageRooms.class);
+                    //getting currentUserID
+                    String currentUserUid = currentUser.getUid();
+
+                    if ((messageRooms.getUser1().equals(currentUserUid) && messageRooms.getUser2().equals(postCreaterID))
+                            || (messageRooms.getUser1().equals(postCreaterID) && messageRooms.getUser2().equals(currentUserUid))) {
+
+                        //geting room id
+                        RoomID = snapshot.getKey();
+                        //setting again to default, just to getting all the logic
+                        RoomID="default";
+                        //moving to another fragment with the messageRoomID
+                        movingMessageFragment(snapshot.getKey());
+                        return;
+
+                    }
+
+
+
+                }
+
+                if(RoomID.equals("default")){
+                    //creating room ID
+                    final String roomID=mRoomRef.push().getKey();
+                    //creating messageRoom
+                    MessageRooms creatingMessageRoom=new MessageRooms(currentUser.getUid(),postCreaterID);
+                    mRoomRef.child(roomID).setValue(creatingMessageRoom).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+
+                            Toast.makeText(getContext(),"room created",Toast.LENGTH_LONG).show();
+
+                            //getting room id
+                            RoomID=roomID;
+                            //setting again to default, just to getting all the logic
+                            RoomID="default";
+                            //moving to another fragment with the messageRoomID
+                            movingMessageFragment(roomID);
+                            return;
+                        }
+                    });
+
+                }
+
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_SHORT).show();
+            }
+        });
+
+
+
+
+
+    }
+
+    /**
+     * Getting fragment manager and moving to another fragment with id
+     * @param RoomID
+     */
+    private void movingMessageFragment(String RoomID){
+
+        MessageScreen messageScreen = new MessageScreen();
+
+        //creating bundle and adding data
+        Bundle bundle = new Bundle();
+        bundle.putString("home", "home");
+        bundle.putString("RoomID", RoomID);
+        messageScreen.setArguments(bundle);
+
+        //Adding again the home fragment and replacing it with message fragment
+        getFragmentManager().beginTransaction()
+                .addToBackStack(null)
+                .replace(R.id.fragment_container,
+                        messageScreen).commit();
+    }
+
+
+    /**
      * setting up spinner
+     *
      * @param view
      */
-    private void setUpSpinner(View view){
+    private void setUpSpinner(View view) {
 
         //getting reference
         spinner = view.findViewById(R.id.spinner1);
@@ -196,8 +324,7 @@ public class HomeFragment extends Fragment {
                     //By userName
                     allPosts_adapter.setmPostListFull(copyList);
                     allPosts_adapter.getUserNameFilter().filter(query);
-                }
-                else if (index == 2) {
+                } else if (index == 2) {
                     //By location
                     allPosts_adapter.setmPostListFull(copyList);
                     allPosts_adapter.getLocationFilter().filter(query);
@@ -224,8 +351,7 @@ public class HomeFragment extends Fragment {
                     //By userName
                     allPosts_adapter.setmPostListFull(copyList);
                     allPosts_adapter.getUserNameFilter().filter(newText);
-                }
-                else if (index == 2) {
+                } else if (index == 2) {
                     //By location
                     allPosts_adapter.setmPostListFull(copyList);
                     allPosts_adapter.getLocationFilter().filter(newText);
