@@ -1,7 +1,6 @@
 package com.example.mymoviepartner;
 
 
-import android.app.ProgressDialog;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,11 +20,8 @@ import android.widget.SearchView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.example.mymoviepartner.ViewHolders.Models.MessageRooms;
-import com.example.mymoviepartner.ViewHolders.Post_ViewHolder;
+import com.example.mymoviepartner.Models.MessageRooms;
 import com.example.mymoviepartner.ViewHolders.allPosts_Adapter;
-import com.firebase.ui.database.FirebaseRecyclerAdapter;
-import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -35,13 +31,9 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -77,6 +69,10 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+
+        //setting title
+        getActivity().setTitle("My Movie Partner");
 
         //referencing recycler view
         recyclerView = view.findViewById(R.id.my_recycler_view);
@@ -211,7 +207,7 @@ public class HomeFragment extends Fragment {
                         //setting again to default, just to getting all the logic
                         RoomID="default";
                         //moving to another fragment with the messageRoomID
-                        movingMessageFragment(snapshot.getKey());
+                        movingMessageFragment(snapshot.getKey(),currentUserUid,postCreaterID);
                         return;
 
                     }
@@ -236,7 +232,7 @@ public class HomeFragment extends Fragment {
                             //setting again to default, just to getting all the logic
                             RoomID="default";
                             //moving to another fragment with the messageRoomID
-                            movingMessageFragment(roomID);
+                            movingMessageFragment(roomID,currentUser.getUid(),postCreaterID);
                             return;
                         }
                     });
@@ -262,7 +258,7 @@ public class HomeFragment extends Fragment {
      * Getting fragment manager and moving to another fragment with id
      * @param RoomID
      */
-    private void movingMessageFragment(String RoomID){
+    private void movingMessageFragment(String RoomID,String fUserID,String otherUserID){
 
         MessageScreen messageScreen = new MessageScreen();
 
@@ -270,6 +266,9 @@ public class HomeFragment extends Fragment {
         Bundle bundle = new Bundle();
         bundle.putString("home", "home");
         bundle.putString("RoomID", RoomID);
+        bundle.putString("fUserID", fUserID);
+        bundle.putString("otherUserID", otherUserID);
+
         messageScreen.setArguments(bundle);
 
         //Adding again the home fragment and replacing it with message fragment
