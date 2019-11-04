@@ -100,6 +100,7 @@ public class HomeFragment extends Fragment {
 
         //fetching data from the database
         fetchData();
+
         //setting up recycler view
         setUpRecyclerView();
 
@@ -163,6 +164,7 @@ public class HomeFragment extends Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
         recyclerView.setAdapter(allPosts_adapter);
 
+
         allPosts_adapter.setOnItemClickListener(new allPosts_Adapter.onClickMessageListener() {
             @Override
             public void onMessageClick(int position) {
@@ -171,7 +173,12 @@ public class HomeFragment extends Fragment {
                 //getting userID
                 String postCreaterID = postModel.getUser_id();
 
-                createMessageRoom(postCreaterID);
+                //you can only message to another users
+                if(!postCreaterID.equals(currentUser.getUid())){
+                    createMessageRoom(postCreaterID);
+                }else{
+                    Toast.makeText(getContext(),"You can't message yourself",Toast.LENGTH_LONG).show();
+                }
 
 
             }
@@ -205,34 +212,33 @@ public class HomeFragment extends Fragment {
                         //geting room id
                         RoomID = snapshot.getKey();
                         //setting again to default, just to getting all the logic
-                        RoomID="default";
+                        RoomID = "default";
                         //moving to another fragment with the messageRoomID
-                        movingMessageFragment(snapshot.getKey(),currentUserUid,postCreaterID);
+                        movingMessageFragment(snapshot.getKey(), currentUserUid, postCreaterID);
                         return;
 
                     }
 
 
-
                 }
 
-                if(RoomID.equals("default")){
+                if (RoomID.equals("default")) {
                     //creating room ID
-                    final String roomID=mRoomRef.push().getKey();
+                    final String roomID = mRoomRef.push().getKey();
                     //creating messageRoom
-                    MessageRooms creatingMessageRoom=new MessageRooms(currentUser.getUid(),postCreaterID);
+                    MessageRooms creatingMessageRoom = new MessageRooms(currentUser.getUid(), postCreaterID);
                     mRoomRef.child(roomID).setValue(creatingMessageRoom).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
-                            Toast.makeText(getContext(),"room created",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "room created", Toast.LENGTH_LONG).show();
 
                             //getting room id
-                            RoomID=roomID;
+                            RoomID = roomID;
                             //setting again to default, just to getting all the logic
-                            RoomID="default";
+                            RoomID = "default";
                             //moving to another fragment with the messageRoomID
-                            movingMessageFragment(roomID,currentUser.getUid(),postCreaterID);
+                            movingMessageFragment(roomID, currentUser.getUid(), postCreaterID);
                             return;
                         }
                     });
@@ -249,16 +255,14 @@ public class HomeFragment extends Fragment {
         });
 
 
-
-
-
     }
 
     /**
      * Getting fragment manager and moving to another fragment with id
+     *
      * @param RoomID
      */
-    private void movingMessageFragment(String RoomID,String fUserID,String otherUserID){
+    private void movingMessageFragment(String RoomID, String fUserID, String otherUserID) {
 
         MessageScreen messageScreen = new MessageScreen();
 

@@ -16,8 +16,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.example.mymoviepartner.ViewHolders.My_OwnPost_ViewHolder;
-import com.example.mymoviepartner.ViewHolders.Post_ViewHolder;
-import com.firebase.ui.common.ChangeEventType;
 import com.firebase.ui.database.FirebaseRecyclerAdapter;
 import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
