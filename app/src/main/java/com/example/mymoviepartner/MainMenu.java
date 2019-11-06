@@ -8,7 +8,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -104,6 +108,7 @@ public class MainMenu extends AppCompatActivity implements
 
     }
 
+
     /**
      * Fetching the data from the database and setting up in textviews
      */
@@ -197,7 +202,7 @@ public class MainMenu extends AppCompatActivity implements
                 //Adding again the home fragment and replacing it with message fragment
                 getSupportFragmentManager().beginTransaction().addToBackStack(null)
                         .replace(R.id.fragment_container,
-                                new MessageScreen()).commit();
+                                new Friends_list()).commit();
 
                 break;
             case R.id.nav_profile:

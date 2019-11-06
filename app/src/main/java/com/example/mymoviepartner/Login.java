@@ -128,7 +128,7 @@ public class Login extends Fragment {
             }
         });
 
-       //Setting up forgot on click button
+        //Setting up forgot on click button
         forgot.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -171,6 +171,7 @@ public class Login extends Fragment {
                 });
 
     }
+
     public void onResume() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onResume();

@@ -1,13 +1,18 @@
 package com.example.mymoviepartner;
 
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -53,7 +58,7 @@ public class HomeFragment extends Fragment {
     private Spinner spinner;
     private ProgressBar progressBar;
 
-    //second
+    //Adapters and list
     private allPosts_Adapter allPosts_adapter;
     private ArrayList<PostModel> listPost = new ArrayList<>();
     private ArrayList<PostModel> copyList;
@@ -70,6 +75,8 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
+
+        isOnline();
 
         //setting title
         getActivity().setTitle("My Movie Partner");
@@ -107,6 +114,16 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
+    public boolean isOnline() {
+        ConnectivityManager conMgr = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+
+        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
+            Toast.makeText(getContext(), "Couldn't refresh feed, No Internet Connection", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
 
     /**
      * fetching data from the firebase and adding to the list
@@ -117,8 +134,6 @@ public class HomeFragment extends Fragment {
         mRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //creating progress dialogue
-
 
                 //clearing the list
                 listPost.clear();
@@ -231,7 +246,7 @@ public class HomeFragment extends Fragment {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
 
-                            Toast.makeText(getContext(), "room created", Toast.LENGTH_LONG).show();
+
 
                             //getting room id
                             RoomID = roomID;

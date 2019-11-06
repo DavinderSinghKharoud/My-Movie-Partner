@@ -155,8 +155,7 @@ public class User_Own_Posts extends Fragment {
                 //getting time of the post from the current time
                 getPostedTime(postModel);
 
-                //just to make sure fragment is loaded before the data is passed
-                boolean isAdded = isAdded();
+
 
                 try {
                     //sending the values to the post holder, so that they can be setup in the views.

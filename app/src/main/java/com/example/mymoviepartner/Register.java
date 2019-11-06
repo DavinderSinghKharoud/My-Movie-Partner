@@ -39,12 +39,12 @@ public class Register extends Fragment {
 
     //Creating Attributes
     private FirebaseAuth mAuth;
-    private EditText mEmail, mPassword, mConfirmPassword,mName;
+    private EditText mEmail, mPassword, mConfirmPassword, mName;
     private RadioGroup mRadioGroup;
     private RadioButton mRadioButton;
     private Button mSignUp;
     private TextView signInHere;
-    DatabaseReference myRef ;
+    DatabaseReference myRef;
 
 
     public Register() {
@@ -60,26 +60,25 @@ public class Register extends Fragment {
         final View view = inflater.inflate(R.layout.fragment_register, container, false);
 
         //Refering the attributes
-        mName= (EditText) view.findViewById(R.id.registerName);
+        mName = (EditText) view.findViewById(R.id.registerName);
         mEmail = (EditText) view.findViewById(R.id.registerEmailId);
         mPassword = (EditText) view.findViewById(R.id.registerPassword);
         mConfirmPassword = (EditText) view.findViewById(R.id.registerConfirmPassword);
-        mSignUp=(Button)view.findViewById(R.id.registerSignUp);
-        mRadioGroup=(RadioGroup)view.findViewById(R.id.gender);
+        mSignUp = (Button) view.findViewById(R.id.registerSignUp);
+        mRadioGroup = (RadioGroup) view.findViewById(R.id.gender);
 
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         //Getting Firebase Reference
-        myRef= FirebaseDatabase.getInstance().getReference("Users");
+        myRef = FirebaseDatabase.getInstance().getReference("Users");
 
         //user is logged in
-        if(mAuth.getCurrentUser() != null){
+        if (mAuth.getCurrentUser() != null) {
 
-            Intent intent=new Intent(getActivity(),MainMenu.class);
+            Intent intent = new Intent(getActivity(), MainMenu.class);
             startActivity(intent);
         }
-
 
 
         //Setting up Sign up click button
@@ -94,19 +93,19 @@ public class Register extends Fragment {
 
 
                 //Getting values of email, password, and confirm password from editText fields
-                String Name=mName.getText().toString();
-                String Gender="";
-                String userEmail=mEmail.getText().toString();
-                String userPassword=mPassword.getText().toString();
+                String Name = mName.getText().toString();
+                String Gender = "";
+                String userEmail = mEmail.getText().toString();
+                String userPassword = mPassword.getText().toString();
                 String confirmPassword = mConfirmPassword.getText().toString();
 
                 //Checking Radio Button
-                int selectedGender=mRadioGroup.getCheckedRadioButtonId();
-                mRadioButton=(RadioButton)view.findViewById(selectedGender);
-                Gender=mRadioButton.getText().toString();
+                int selectedGender = mRadioGroup.getCheckedRadioButtonId();
+                mRadioButton = (RadioButton) view.findViewById(selectedGender);
+                Gender = mRadioButton.getText().toString();
 
                 //Creating the new user in the database
-                createUser(userEmail,userPassword,confirmPassword,Name,Gender);
+                createUser(userEmail, userPassword, confirmPassword, Name, Gender);
             }
         });
 
@@ -126,39 +125,40 @@ public class Register extends Fragment {
 
 
     /**
-     *Creating new user in the database
-     * @param email {Taking string as attibute}
-     * @param password {Taking string as attibute}
+     * Creating new user in the database
+     *
+     * @param email       {Taking string as attibute}
+     * @param password    {Taking string as attibute}
      * @param confirmPass {Taking string as attibute}
      */
-    private void createUser(String email, String password, String confirmPass, final String Name, final String Gender){
+    private void createUser(String email, String password, String confirmPass, final String Name, final String Gender) {
 
-        if(TextUtils.isEmpty(Name)){
-            Toast.makeText(getContext(),"Please enter your name",Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(Name)) {
+            Toast.makeText(getContext(), "Please enter your name", Toast.LENGTH_LONG).show();
             return;
         }
-        if(TextUtils.isEmpty(email)){
-            Toast.makeText(getContext(),"Please enter your e-mail",Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(email)) {
+            Toast.makeText(getContext(), "Please enter your e-mail", Toast.LENGTH_LONG).show();
             return;
         }
-        if(!email.contains("@") || !email.contains(".")){
-            Toast.makeText(getContext(),"Incorrect e-mail ID",Toast.LENGTH_LONG).show();
+        if (!email.contains("@") || !email.contains(".")) {
+            Toast.makeText(getContext(), "Incorrect e-mail ID", Toast.LENGTH_LONG).show();
             return;
         }
-        if(TextUtils.isEmpty(password)){
-            Toast.makeText(getContext(),"Please enter your password",Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(password)) {
+            Toast.makeText(getContext(), "Please enter your password", Toast.LENGTH_LONG).show();
             return;
         }
-        if(password.length()<7){
-            Toast.makeText(getContext(),"Password must be 7 characters long",Toast.LENGTH_LONG).show();
+        if (password.length() < 7) {
+            Toast.makeText(getContext(), "Password must be 7 characters long", Toast.LENGTH_LONG).show();
             return;
         }
-        if(TextUtils.isEmpty(confirmPass)){
-            Toast.makeText(getContext(),"Confirm password field is empty",Toast.LENGTH_LONG).show();
+        if (TextUtils.isEmpty(confirmPass)) {
+            Toast.makeText(getContext(), "Confirm password field is empty", Toast.LENGTH_LONG).show();
             return;
         }
-        if(!confirmPass.equals(password)){
-            Toast.makeText(getContext(),"Password Fields are not same",Toast.LENGTH_LONG).show();
+        if (!confirmPass.equals(password)) {
+            Toast.makeText(getContext(), "Password Fields are not same", Toast.LENGTH_LONG).show();
             return;
         }
         //creating progress dialogue
@@ -172,21 +172,21 @@ public class Register extends Fragment {
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
                             progressDialog.dismiss();
-                            String ImageURL="default";
-                            userModel mUser=new userModel(Name,Gender,ImageURL);
+                            String ImageURL = "default";
+                            userModel mUser = new userModel(Name, Gender, ImageURL);
                             FirebaseDatabase.getInstance().getReference("Users")
                                     .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                            .setValue(mUser);
+                                    .setValue(mUser);
 
 
-                            Toast.makeText(getContext(),"Registration successful",Toast.LENGTH_LONG).show();
+                            Toast.makeText(getContext(), "Registration successful", Toast.LENGTH_LONG).show();
 
                             // Sign in success, update UI with the signed-in user's information
-                            FragmentTransaction fragmentTransaction=getFragmentManager().beginTransaction();
-                            fragmentTransaction.replace(R.id.mainActivity_layout,new Login()).commit();
+                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                            fragmentTransaction.replace(R.id.mainActivity_layout, new Login()).commit();
                         } else {
                             progressDialog.dismiss();
-                            Toast.makeText(getContext(),"Not successful",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "Not successful", Toast.LENGTH_SHORT).show();
                         }
                         // ...
                     }
