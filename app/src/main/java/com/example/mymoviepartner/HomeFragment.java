@@ -57,6 +57,7 @@ public class HomeFragment extends Fragment {
     private LinearLayoutManager mLayoutManager;
     private Spinner spinner;
     private ProgressBar progressBar;
+    private ValueEventListener mValueEventListener;
 
     //Adapters and list
     private allPosts_Adapter allPosts_adapter;
@@ -75,7 +76,7 @@ public class HomeFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
-
+        //To check the internet connectivity
         isOnline();
 
         //setting title
@@ -105,6 +106,8 @@ public class HomeFragment extends Fragment {
         progressBar = view.findViewById(R.id.progress_bar_home);
         progressBar.setVisibility(View.VISIBLE);
 
+        //attaching value event listener
+        attachValueEventListener();
         //fetching data from the database
         fetchData();
 
@@ -114,27 +117,14 @@ public class HomeFragment extends Fragment {
         return view;
     }
 
-    public boolean isOnline() {
-        ConnectivityManager conMgr = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
-
-        if(netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()){
-            Toast.makeText(getContext(), "Couldn't refresh feed, No Internet Connection", Toast.LENGTH_LONG).show();
-            return false;
-        }
-        return true;
-    }
-
     /**
-     * fetching data from the firebase and adding to the list
+     * creating new value event listener
      */
-    private void fetchData() {
+    private void attachValueEventListener() {
 
-
-        mRef.addValueEventListener(new ValueEventListener() {
+        mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
                 //clearing the list
                 listPost.clear();
 
@@ -155,7 +145,31 @@ public class HomeFragment extends Fragment {
 
                 Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_SHORT).show();
             }
-        });
+        };
+    }
+
+    /**
+     * To check the internet connectivity
+     */
+    private boolean isOnline() {
+        ConnectivityManager conMgr = (ConnectivityManager) getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = conMgr.getActiveNetworkInfo();
+
+        if (netInfo == null || !netInfo.isConnected() || !netInfo.isAvailable()) {
+            Toast.makeText(getContext(), "Couldn't refresh feed, No Internet Connection", Toast.LENGTH_LONG).show();
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * fetching data from the firebase and adding to the list
+     */
+    private void fetchData() {
+
+        //adding value event listener
+
+        mRef.addValueEventListener(mValueEventListener);
 
 
     }
@@ -189,10 +203,10 @@ public class HomeFragment extends Fragment {
                 String postCreaterID = postModel.getUser_id();
 
                 //you can only message to another users
-                if(!postCreaterID.equals(currentUser.getUid())){
+                if (!postCreaterID.equals(currentUser.getUid())) {
                     createMessageRoom(postCreaterID);
-                }else{
-                    Toast.makeText(getContext(),"You can't message yourself",Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getContext(), "You can't message yourself", Toast.LENGTH_LONG).show();
                 }
 
 
@@ -245,7 +259,6 @@ public class HomeFragment extends Fragment {
                     mRoomRef.child(roomID).setValue(creatingMessageRoom).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-
 
 
                             //getting room id
@@ -393,16 +406,12 @@ public class HomeFragment extends Fragment {
 
 
     //private void displayData
-    @Override
-    public void onStart() {
-        super.onStart();
 
-    }
 
     @Override
     public void onStop() {
         super.onStop();
-
+        mRef.removeEventListener(mValueEventListener);
     }
 
     @Override
