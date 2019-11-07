@@ -327,6 +327,7 @@ public class CreatePost extends Fragment {
             }
         }, Year, Month, Date);
 
+        datePickerDialog.getDatePicker().setMinDate(System.currentTimeMillis() - 1000);
         datePickerDialog.show();
 
 
