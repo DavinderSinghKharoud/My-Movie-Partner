@@ -47,6 +47,9 @@ public class Profile extends Fragment {
     private DatabaseReference userReference;
     private StorageReference photo_ref;
     private DatabaseReference posts_ref;
+    private DatabaseReference message_rooms;
+    private DatabaseReference mMessages;
+
 
     private AlertDialog.Builder alertDialogBuilder;
     private AlertDialog dialog;
@@ -81,6 +84,8 @@ public class Profile extends Fragment {
         userReference = FirebaseDatabase.getInstance().getReference("Users").child(fUser.getUid());
         photo_ref = FirebaseStorage.getInstance().getReference("uploads").child(fUser.getUid() + ".jpg");
         posts_ref = FirebaseDatabase.getInstance().getReference("Posts");
+        message_rooms = FirebaseDatabase.getInstance().getReference("MessageRooms");
+        mMessages = FirebaseDatabase.getInstance().getReference("Messages");
 
         progressDialog = new ProgressDialog(getContext());
 
@@ -171,38 +176,9 @@ public class Profile extends Fragment {
                         progressDialog.show();
                         progressDialog.setCancelable(false);
 
-                        fUser.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                                Toast.makeText(getContext(), "Account Deleted",
-                                        Toast.LENGTH_SHORT).show();
+                        final String userID=fUser.getUid();
 
-                                //removing data from the database
-                                userReference.removeValue();
-                                //removing image from the database
-                                photo_ref.delete();
-
-                                //remove the posts created by the user
-                                Query query = posts_ref.orderByChild("user_id").equalTo(fUser.getUid());
-                                query.addListenerForSingleValueEvent(new ValueEventListener() {
-                                    @Override
-                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                                            snapshot.getRef().removeValue();
-                                        }
-                                    }
-
-                                    @Override
-                                    public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                                    }
-                                });
-                                progressDialog.dismiss();
-                                Intent intent = new Intent(getActivity(), FirstScreen.class);
-                                startActivity(intent);
-                                getActivity().finish();
-                            }
-                        });
+                        deleteUserDetails(userID);
 
 
 
@@ -260,15 +236,105 @@ public class Profile extends Fragment {
 
     }
 
-    /**
-     * Clear the back stack of fragments
-     */
-    private void clearBackStack() {
-        FragmentManager manager = getFragmentManager();
-        if (manager.getBackStackEntryCount() > 0) {
-            FragmentManager.BackStackEntry first = manager.getBackStackEntryAt(0);
-            manager.popBackStack(first.getId(), FragmentManager.POP_BACK_STACK_INCLUSIVE);
-        }
+    private void deleteUserDetails(String userID) {
+        //removing data from the database
+        userReference.removeValue();
+        //removing image from the database
+        photo_ref.delete();
+
+        //remove the posts created by the user
+        Query query = posts_ref.orderByChild("user_id").equalTo(userID);
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+        Query mRooms = message_rooms.orderByChild("user1").equalTo(userID);
+        mRooms.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        Query mRooms1 = message_rooms.orderByChild("user2").equalTo(userID);
+        mRooms.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        Query messageQuery=mMessages.orderByChild("senderID").equalTo(userID);
+        messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        Query messageQuery1=mMessages.orderByChild("receiverID").equalTo(userID);
+        messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                    snapshot.getRef().removeValue();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+        fUser.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                Toast.makeText(getContext(), "Account Deleted",
+                        Toast.LENGTH_SHORT).show();
+
+
+                progressDialog.dismiss();
+
+
+                // deleteUserDetails(userID);
+                Intent intent = new Intent(getActivity(), FirstScreen.class);
+                startActivity(intent);
+                getActivity().finish();
+            }
+        });
     }
 
     public void onResume() {

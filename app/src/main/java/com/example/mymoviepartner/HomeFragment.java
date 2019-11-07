@@ -2,6 +2,7 @@ package com.example.mymoviepartner;
 
 
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -210,6 +211,22 @@ public class HomeFragment extends Fragment {
                 }
 
 
+            }
+
+            @Override
+            public void onItemLongClick(View view, int position) {
+                //getting post model
+                PostModel postModel = listPost.get(position);
+
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "Check this post on MyMoviePartner App:\n Title: " +postModel.getTitle()
+                        +"\nPost Description: "+postModel.getDescription();
+                String shareSubject = "Checkout our MyMoviePartner application from the GitHub: \n https://github.com/DavinderSinghKharoud/My-Movie-Partner";
+
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                sharingIntent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
+                startActivity(Intent.createChooser(sharingIntent, "Share using"));
             }
         });
 

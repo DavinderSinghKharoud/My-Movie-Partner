@@ -205,7 +205,7 @@ public class Manage_Account extends Fragment {
     private void getUserDetails(){
 
 
-        userDetails.addValueEventListener(new ValueEventListener() {
+        userDetails.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userModel mUser=dataSnapshot.getValue(userModel.class);

@@ -61,7 +61,7 @@ public class MainMenu extends AppCompatActivity implements
         nav_name = (TextView) header.findViewById(R.id.navigation_name);
         nav_email = (TextView) header.findViewById(R.id.navigation_email);
         nav_profile_pic = (CircleImageView) header.findViewById(R.id.navigation_image);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(false);
+    
         //Getting user and firebase data instance
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
