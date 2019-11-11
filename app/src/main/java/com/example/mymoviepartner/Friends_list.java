@@ -90,6 +90,10 @@ public class Friends_list extends Fragment {
         progressBar = view.findViewById(R.id.progress_bar_friendsList);
 
 
+
+        //setting up recycler view
+        settingUpRecyclerView(view);
+
         addChildEventListener();
         changeFriends();
 
@@ -98,8 +102,6 @@ public class Friends_list extends Fragment {
         //     fetchFriendsList();
 
 
-        //setting up recycler view
-        settingUpRecyclerView(view);
 
 
         return view;
@@ -317,6 +319,7 @@ public class Friends_list extends Fragment {
         friends_adapter.setOnItemClickListener(new Friends_Adapter.OnItemClickListener() {
             @Override
             public void onItemClick(int positon) {
+
                 FriendsModel friend = listFriends.get(positon);
 
                 movingMessageFragment(friend.getRoomID(), currentUser.getUid(), friend.getUserID());
@@ -425,6 +428,9 @@ public class Friends_list extends Fragment {
 
         messageScreen.setArguments(bundle);
 
+        mFriendsRef.removeEventListener(mChildEventListener);
+        listFriends.clear();
+
         //Adding again the home fragment and replacing it with message fragment
         getFragmentManager().beginTransaction()
                 .addToBackStack(null)
@@ -442,18 +448,6 @@ public class Friends_list extends Fragment {
         mFriendsRef.removeEventListener(mChildEventListener);
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        mFriendsRef.removeEventListener(mChildEventListener);
-        listFriends.clear();
-
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     private void adapterCheck(){
         friends_adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {

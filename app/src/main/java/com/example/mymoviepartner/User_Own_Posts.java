@@ -2,6 +2,7 @@ package com.example.mymoviepartner;
 
 
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -245,6 +246,21 @@ public class User_Own_Posts extends Fragment {
                                 Toast.makeText(getContext(),"deleted",Toast.LENGTH_SHORT).show();
                             }
                         });*/
+                    }
+
+                    @Override
+                    public void onItemLongClick(View view, int position) {
+                        //getting post model
+
+                        Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                        sharingIntent.setType("text/plain");
+                        String shareBody = "Check this post on MyMoviePartner App:\n Title: " +postModel.getTitle()
+                                +"\nPost Description: "+postModel.getDescription();
+                        String shareSubject = "Checkout our MyMoviePartner application from the GitHub: \n https://github.com/DavinderSinghKharoud/My-Movie-Partner";
+
+                        sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                        sharingIntent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
+                        startActivity(Intent.createChooser(sharingIntent, "Share using"));
                     }
 
 

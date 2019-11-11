@@ -1,19 +1,23 @@
 package com.example.mymoviepartner;
 
 
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.icu.text.CaseMap;
 import android.icu.util.Calendar;
 import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
+import android.os.Handler;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
@@ -54,8 +58,6 @@ public class CreatePost extends Fragment {
     private DatabaseReference post_reference;
     private String timeFormatted = "";
     private String dateFormatted = "";
-    private Boolean checkDateButtonClicked = false;
-    private Boolean checkTimeButtonClicked = false;
 
 
     private Bundle data;
@@ -131,15 +133,34 @@ public class CreatePost extends Fragment {
         //creating node with the name as "posts" in the database
         post_reference = FirebaseDatabase.getInstance().getReference("Posts");
 
+        postLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent i = new Intent(getActivity(), MapsActivity.class);
+                startActivityForResult(i,1);
+            }
+        });
+
+
+        final long Time=1*1000;
+
         //Setting up Date and time picker
         postDate.setOnClickListener(new View.OnClickListener() {
 
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
+                postDate.setEnabled(false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        postDate.setEnabled(true);
+                    }
+                },Time);
+
                 //Selecting date
                 handleDateButton();
-                checkDateButtonClicked = true;
             }
         });
 
@@ -149,7 +170,6 @@ public class CreatePost extends Fragment {
             public void onClick(View view) {
                 //Selecting time
                 handleTimeButton();
-                checkTimeButtonClicked = true;
             }
         });
 
@@ -438,5 +458,19 @@ public class CreatePost extends Fragment {
         ;
 
 
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 1) {
+            if(resultCode == Activity.RESULT_OK){
+                String result=data.getStringExtra("result");
+                postLocation.setText(result);
+            }
+            if (resultCode == Activity.RESULT_CANCELED) {
+                //Write your code if there's no result
+            }
+        }
     }
 }

@@ -32,7 +32,7 @@ public class My_OwnPost_ViewHolder extends RecyclerView.ViewHolder {
 
         //getting reference
         edit_own_post = mView.findViewById(R.id.edit_my_post);
-        delete_own_post=mView.findViewById(R.id.delete_my_post);
+        delete_own_post = mView.findViewById(R.id.delete_my_post);
 
         edit_own_post.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -44,7 +44,22 @@ public class My_OwnPost_ViewHolder extends RecyclerView.ViewHolder {
         delete_own_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                mClickListener.onItemDeleteClick(view,getAdapterPosition());
+                mClickListener.onItemDeleteClick(view, getAdapterPosition());
+            }
+        });
+
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                if (mClickListener != null) {
+                    int position = getAdapterPosition();
+
+                    if (position != RecyclerView.NO_POSITION) {
+                        mClickListener.onItemLongClick(view,position);
+                    }
+                }
+
+                return true;
             }
         });
     }
@@ -84,7 +99,10 @@ public class My_OwnPost_ViewHolder extends RecyclerView.ViewHolder {
 
     public interface ClickListener {
         void onItemClick(View view, int position);
-        void onItemDeleteClick(View view,int position);
+
+        void onItemDeleteClick(View view, int position);
+
+        void onItemLongClick(View view, int position);
     }
 
     public void setOnClickListener(My_OwnPost_ViewHolder.ClickListener clickListener) {

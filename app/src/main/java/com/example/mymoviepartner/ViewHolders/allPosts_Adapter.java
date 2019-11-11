@@ -5,10 +5,12 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,6 +65,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
         private TextView mTitle, mDesc, mDate, mTime, mLocation, mGender, mName, mPostedTime;
         private CircleImageView circleImageView;
         private Button mMessage;
+        private RelativeLayout container;
 
 
         public postViewHolder(@NonNull View itemView, final onClickMessageListener listener) {
@@ -71,6 +74,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
             mView = itemView;
 
             //Views
+            container=mView.findViewById(R.id.container_allposts);
             mTitle = mView.findViewById(R.id.textView2_title);
             mDesc = mView.findViewById(R.id.textView3_description);
             mDate = mView.findViewById(R.id.textView4_date);
@@ -141,6 +145,9 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
         PostModel postModel = mPostList.get(position);
 
+        holder.circleImageView.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_recycleview));
+
+        holder.container.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_animation));
         //Set data to views
         holder.mTitle.setText(postModel.getTitle());
         holder.mDesc.setText(postModel.getDescription());
