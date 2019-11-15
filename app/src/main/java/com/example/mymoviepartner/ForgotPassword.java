@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -46,6 +47,8 @@ public class ForgotPassword extends Fragment {
         // Inflate the layout for this fragment
         final View view = inflater.inflate(R.layout.fragment_forgot_password, container, false);
 
+
+
         mAuth = FirebaseAuth.getInstance();
 
         progressBar = (ProgressBar) view.findViewById(R.id.forgot_progressBar);
@@ -56,6 +59,9 @@ public class ForgotPassword extends Fragment {
         sendPassword = (Button) view.findViewById(R.id.passwordBtn_forgotPassword);
         enter_email = (EditText) view.findViewById(R.id.email_forgotPassword);
         goback = (Button)view. findViewById(R.id.forgot_goback);
+
+        //setting up listeners
+        setUpOnTouchAndOnFocusListeners();
 
         sendPassword.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -105,6 +111,30 @@ public class ForgotPassword extends Fragment {
         });
         return view;
     }
+
+    /**
+     * setting up onTouchListeners on title,desc and location
+     */
+    private void setUpOnTouchAndOnFocusListeners() {
+        //for email
+        enter_email.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                enter_email.setHint("");
+                return false;
+            }
+        });
+
+        enter_email.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    enter_email.setHint("Enter your email");
+                }
+            }
+        });
+    }
+
     public void onResume() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onResume();

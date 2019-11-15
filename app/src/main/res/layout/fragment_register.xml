@@ -46,7 +46,8 @@
         app:layout_constraintVertical_bias="0.251" />
 
     <EditText
-        android:textCursorDrawable="@android:color/white"
+        android:textCursorDrawable="@null"
+        android:cursorVisible="true"
         android:textColor="@android:color/white"
         android:id="@+id/registerName"
         android:layout_width="300dp"
@@ -66,7 +67,8 @@
         app:layout_constraintVertical_bias="0.338" />
 
     <EditText
-        android:textCursorDrawable="@android:color/white"
+        android:textCursorDrawable="@null"
+        android:cursorVisible="true"
         android:id="@+id/registerEmailId"
         android:layout_width="300dp"
         android:layout_height="40dp"
@@ -87,7 +89,8 @@
         android:maxLines="1"/>
 
     <EditText
-        android:textCursorDrawable="@android:color/white"
+        android:textCursorDrawable="@null"
+        android:cursorVisible="true"
         android:textColor="@android:color/white"
         android:id="@+id/registerPassword"
         android:layout_width="300dp"
@@ -108,7 +111,8 @@
         android:maxLines="1"/>
 
     <EditText
-        android:textCursorDrawable="@android:color/white"
+        android:textCursorDrawable="@null"
+        android:cursorVisible="true"
         android:textColor="@android:color/white"
         android:id="@+id/registerConfirmPassword"
         android:layout_width="300dp"

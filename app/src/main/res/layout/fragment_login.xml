@@ -55,7 +55,6 @@
         android:drawablePadding="10dp"
         android:hint="Enter your e-mail"
         android:paddingLeft="10dp"
-        android:textCursorDrawable="@android:color/white"
         android:inputType="textEmailAddress"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"
@@ -65,28 +64,31 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.38"
-        android:maxLines="1"/>
+        android:maxLines="1"
+        android:textCursorDrawable="@null"
+        android:cursorVisible="true"/>
 
     <EditText
         android:id="@+id/loginPassword"
         android:layout_width="300dp"
         android:layout_height="40dp"
         android:background="@drawable/drawable_edit_text"
+        android:cursorVisible="true"
         android:drawableLeft="@drawable/password"
         android:drawablePadding="10dp"
         android:hint="Enter your password"
-        android:paddingLeft="10dp"
-        android:textCursorDrawable="@android:color/white"
         android:inputType="textPassword"
+        android:maxLines="1"
+        android:paddingLeft="10dp"
         android:textColor="@android:color/white"
         android:textColorHint="@android:color/white"
+        android:textCursorDrawable="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.585"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.515"
-        android:maxLines="1"/>
+        app:layout_constraintVertical_bias="0.499" />
 
     <Button
         android:id="@+id/loginBtn_id"

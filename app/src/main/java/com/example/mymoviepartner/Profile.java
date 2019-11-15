@@ -311,6 +311,8 @@ public class Profile extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     snapshot.getRef().removeValue();
                 }
+
+                progressDialog.dismiss();
             }
 
             @Override

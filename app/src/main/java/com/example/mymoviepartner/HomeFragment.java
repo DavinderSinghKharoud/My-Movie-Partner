@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -24,7 +26,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.example.mymoviepartner.Models.MessageRooms;
 import com.example.mymoviepartner.ViewHolders.allPosts_Adapter;
@@ -38,7 +42,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 
 
@@ -76,6 +82,8 @@ public class HomeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+
 
         //To check the internet connectivity
         isOnline();
@@ -198,6 +206,10 @@ public class HomeFragment extends Fragment {
         allPosts_adapter.setOnItemClickListener(new allPosts_Adapter.onClickMessageListener() {
             @Override
             public void onMessageClick(int position) {
+
+
+               // progressBar.setVisibility(View.VISIBLE);
+
                 //getting post model
                 PostModel postModel = listPost.get(position);
                 //getting userID
@@ -206,8 +218,12 @@ public class HomeFragment extends Fragment {
                 //you can only message to another users
                 if (!postCreaterID.equals(currentUser.getUid())) {
                     createMessageRoom(postCreaterID);
+
+                   // progressBar.setVisibility(View.INVISIBLE);
                 } else {
                     Toast.makeText(getContext(), "You can't message yourself", Toast.LENGTH_LONG).show();
+
+                   // progressBar.setVisibility(View.INVISIBLE);
                 }
 
 
@@ -215,6 +231,22 @@ public class HomeFragment extends Fragment {
 
             @Override
             public void onItemLongClick(View view, int position) {
+                //getting post model
+                PostModel postModel = listPost.get(position);
+
+                Intent sharingIntent = new Intent(Intent.ACTION_SEND);
+                sharingIntent.setType("text/plain");
+                String shareBody = "Check this post on MyMoviePartner App:\n Title: " +postModel.getTitle()
+                        +"\nPost Description: "+postModel.getDescription();
+                String shareSubject = "Checkout our MyMoviePartner application from the GitHub: \n https://github.com/DavinderSinghKharoud/My-Movie-Partner";
+
+                sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
+                sharingIntent.putExtra(Intent.EXTRA_SUBJECT, shareSubject);
+                startActivity(Intent.createChooser(sharingIntent, "Share using"));
+            }
+
+            @Override
+            public void onShareClick(int position) {
                 //getting post model
                 PostModel postModel = listPost.get(position);
 
@@ -359,6 +391,8 @@ public class HomeFragment extends Fragment {
 
         MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
         android.widget.SearchView searchView = (android.widget.SearchView) myActionMenuItem.getActionView();
+
+
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override

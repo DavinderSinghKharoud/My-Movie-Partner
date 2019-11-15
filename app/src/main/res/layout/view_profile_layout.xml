@@ -122,7 +122,7 @@
             android:layout_height="25dp"
             android:layout_below="@id/textView7_gender"
             android:background="@drawable/share"
-            android:layout_marginRight="4dp"
+            android:layout_marginRight="15dp"
             android:layout_toLeftOf="@id/imageView_message"/>
 
         <ImageView

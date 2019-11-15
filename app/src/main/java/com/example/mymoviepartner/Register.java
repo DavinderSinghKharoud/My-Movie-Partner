@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -68,13 +69,16 @@ public class Register extends Fragment {
         mRadioGroup = (RadioGroup) view.findViewById(R.id.gender);
 
 
+        //setting up listeners
+        setUpOnTouchAndOnFocusListeners();
+
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
         //Getting Firebase Reference
         myRef = FirebaseDatabase.getInstance().getReference("Users");
 
         //user is logged in
-        if (mAuth.getCurrentUser() != null) {
+        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().isEmailVerified()) {
 
             Intent intent = new Intent(getActivity(), MainMenu.class);
             startActivity(intent);
@@ -171,19 +175,35 @@ public class Register extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            progressDialog.dismiss();
-                            String ImageURL = "default";
-                            userModel mUser = new userModel(Name, Gender, ImageURL);
-                            FirebaseDatabase.getInstance().getReference("Users")
-                                    .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
-                                    .setValue(mUser);
+
+                            mAuth.getCurrentUser().sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+
+                                    if(task.isSuccessful()){
+                                        progressDialog.dismiss();
+                                        String ImageURL = "default";
+                                        userModel mUser = new userModel(Name, Gender, ImageURL);
+                                        FirebaseDatabase.getInstance().getReference("Users")
+                                                .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
+                                                .setValue(mUser);
 
 
-                            Toast.makeText(getContext(), "Registration successful", Toast.LENGTH_LONG).show();
+                                        Toast.makeText(getContext(), "Registration successful, please check " +
+                                                "your email for verification", Toast.LENGTH_LONG).show();
 
-                            // Sign in success, update UI with the signed-in user's information
-                            FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                            fragmentTransaction.replace(R.id.mainActivity_layout, new Login()).commit();
+                                        // Sign in success, update UI with the signed-in user's information
+                                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                        fragmentTransaction.replace(R.id.mainActivity_layout, new Login()).commit();
+                                    }else{
+
+                                        progressDialog.dismiss();
+                                        Toast.makeText(getContext(), task.getException().toString(), Toast.LENGTH_SHORT).show();
+                                    }
+
+                                }
+                            });
+
                         } else {
                             progressDialog.dismiss();
                             Toast.makeText(getContext(), "Not successful", Toast.LENGTH_SHORT).show();
@@ -199,13 +219,80 @@ public class Register extends Fragment {
         super.onResume();
     }
 
-/*    private boolean checkPasswordCharacters(String email){
-        String[] splitPart=email.split(".",1);
-        String afterDot= splitPart[1];
-        boolean output=false;
-        if(afterDot.length()>1){
-            output=true ;
-        }
-        return output;
-    }*/
+    /**
+     * setting up onTouchListeners on title,desc and location
+     */
+    private void setUpOnTouchAndOnFocusListeners() {
+        //for email
+        mName.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mName.setHint("");
+                return false;
+            }
+        });
+
+        mName.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    mName.setHint("Full name");
+                }
+            }
+        });
+
+        //for password
+        mPassword.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mPassword.setHint("");
+                return false;
+            }
+        });
+
+        mPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    mPassword.setHint("Create password");
+                }
+            }
+        });
+
+        //for email
+        mEmail.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mEmail.setHint("");
+                return false;
+            }
+        });
+
+        mEmail.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    mEmail.setHint("Enter your e-mail");
+                }
+            }
+        });
+
+        //for confirm password
+        mConfirmPassword.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                mConfirmPassword.setHint("");
+                return false;
+            }
+        });
+
+        mConfirmPassword.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    mConfirmPassword.setHint("Confirm password");
+                }
+            }
+        });
+    }
 }

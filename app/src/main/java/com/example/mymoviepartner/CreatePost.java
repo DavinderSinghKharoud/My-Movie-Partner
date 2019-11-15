@@ -21,6 +21,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.text.format.DateFormat;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -28,6 +29,8 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -53,11 +56,13 @@ public class CreatePost extends Fragment {
     private EditText postTitle, postDesc, postLocation;
     private TextView pageTitle;
     private Button postDate, postTime;
+    private ImageButton selectMaps;
     private Button creatPost;
     private FirebaseUser currentUser;
     private DatabaseReference post_reference;
     private String timeFormatted = "";
     private String dateFormatted = "";
+    final long Time = 1 * 1000;
 
 
     private Bundle data;
@@ -84,11 +89,14 @@ public class CreatePost extends Fragment {
         postLocation = view.findViewById(R.id.post_location);
         postDate = (Button) view.findViewById(R.id.date);
         postTime = (Button) view.findViewById(R.id.time);
+        selectMaps = view.findViewById(R.id.mapsPicture);
         creatPost = view.findViewById(R.id.postbtn);
         pageTitle = view.findViewById(R.id.textviewCP);
 
         progressDialog = new ProgressDialog(getContext());
 
+        //setting up listeners
+        setUpOnTouchAndOnFocusListeners();
 
         //Referencing Navigation View and checking navigation menu item as home
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
@@ -133,17 +141,21 @@ public class CreatePost extends Fragment {
         //creating node with the name as "posts" in the database
         post_reference = FirebaseDatabase.getInstance().getReference("Posts");
 
-        postLocation.setOnClickListener(new View.OnClickListener() {
+        selectMaps.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+                selectMaps.setEnabled(false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        selectMaps.setEnabled(true);
+                    }
+                }, Time);
                 Intent i = new Intent(getActivity(), MapsActivity.class);
-                startActivityForResult(i,1);
+                startActivityForResult(i, 1);
             }
         });
 
-
-        final long Time=1*1000;
 
         //Setting up Date and time picker
         postDate.setOnClickListener(new View.OnClickListener() {
@@ -157,7 +169,7 @@ public class CreatePost extends Fragment {
                     public void run() {
                         postDate.setEnabled(true);
                     }
-                },Time);
+                }, Time);
 
                 //Selecting date
                 handleDateButton();
@@ -168,6 +180,13 @@ public class CreatePost extends Fragment {
             @RequiresApi(api = Build.VERSION_CODES.N)
             @Override
             public void onClick(View view) {
+                postTime.setEnabled(false);
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        postTime.setEnabled(true);
+                    }
+                }, Time);
                 //Selecting time
                 handleTimeButton();
             }
@@ -205,14 +224,14 @@ public class CreatePost extends Fragment {
                     return;
                 }
                 //checking if the date button is clicked
-                String textDate=postDate.getText().toString();
+                String textDate = postDate.getText().toString();
                 if (textDate.equals("")) {
                     Toast.makeText(getContext(), "Please select the available date", Toast.LENGTH_SHORT).show();
                     return;
                 }
                 //checking if the time button is clicked
 
-                String textTime=postTime.getText().toString();
+                String textTime = postTime.getText().toString();
                 if (textTime.equals("")) {
                     Toast.makeText(getContext(), "Please select the available time", Toast.LENGTH_SHORT).show();
                     return;
@@ -464,13 +483,71 @@ public class CreatePost extends Fragment {
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == 1) {
-            if(resultCode == Activity.RESULT_OK){
-                String result=data.getStringExtra("result");
+            if (resultCode == Activity.RESULT_OK) {
+                String result = data.getStringExtra("result");
                 postLocation.setText(result);
             }
             if (resultCode == Activity.RESULT_CANCELED) {
                 //Write your code if there's no result
             }
         }
+    }
+
+    /**
+     * setting up onTouchListeners on title,desc and location
+     */
+    private void setUpOnTouchAndOnFocusListeners() {
+        //for post Title
+        postTitle.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                postTitle.setHint("");
+                return false;
+            }
+        });
+
+        postTitle.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    postTitle.setHint("Title");
+                }
+            }
+        });
+
+        //for post description
+        postDesc.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                postDesc.setHint("");
+                return false;
+            }
+        });
+
+        postDesc.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    postDesc.setHint("Write Description");
+                }
+            }
+        });
+        //for post Location
+        postLocation.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                postLocation.setHint("");
+                return false;
+            }
+        });
+
+        postLocation.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    postLocation.setHint("Location");
+                }
+            }
+        });
     }
 }

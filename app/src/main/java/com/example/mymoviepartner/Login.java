@@ -6,6 +6,7 @@ import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
@@ -65,6 +66,9 @@ public class Login extends Fragment {
         login = (Button) view.findViewById(R.id.loginBtn_id);
         forgot = (TextView) view.findViewById(R.id.forgotPasswordBtn);
 
+        //setting up listeners
+        setUpOnTouchAndOnFocusListeners();
+
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
 
@@ -73,7 +77,7 @@ public class Login extends Fragment {
 
         //If user is already logged in, the main menu will open
         //Replacing Fragment coantainer with main menu fragment
-        if (mAuth.getCurrentUser() != null) { //user is logged in
+        if (mAuth.getCurrentUser() != null && mAuth.getCurrentUser().isEmailVerified()) { //user is logged in
             // FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
             //   fragmentTransaction.replace(R.id.mainActivity_layout, new MainMenu()).commit();
 
@@ -155,12 +159,20 @@ public class Login extends Fragment {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if (task.isSuccessful()) {
-                            progressBar.setVisibility(View.INVISIBLE);
-                            //  FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                            //fragmentTransaction.replace(R.id.mainActivity_layout, new MainMenu()).commit();
-                            Intent intent = new Intent(getActivity(), MainMenu.class);
-                            startActivity(intent);
-                            getActivity().finish();
+
+                            if (mAuth.getCurrentUser().isEmailVerified()){
+
+                                progressBar.setVisibility(View.INVISIBLE);
+                                //  FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+                                //fragmentTransaction.replace(R.id.mainActivity_layout, new MainMenu()).commit();
+                                Intent intent = new Intent(getActivity(), MainMenu.class);
+                                startActivity(intent);
+                                getActivity().finish();
+                            }else{
+
+                                progressBar.setVisibility(View.INVISIBLE);
+                                Toast.makeText(getContext(), "Plesase, verify your email address", Toast.LENGTH_SHORT).show();
+                            }
                         } else {
                             progressBar.setVisibility(View.INVISIBLE);
                             Toast.makeText(getContext(), "Incorrect Credentials", Toast.LENGTH_SHORT).show();
@@ -175,6 +187,47 @@ public class Login extends Fragment {
     public void onResume() {
         getActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         super.onResume();
+    }
+
+    /**
+     * setting up onTouchListeners on title,desc and location
+     */
+    private void setUpOnTouchAndOnFocusListeners() {
+        //for email
+        email_edt.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                email_edt.setHint("");
+                return false;
+            }
+        });
+
+        email_edt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    email_edt.setHint("Enter your email");
+                }
+            }
+        });
+
+        //for password
+        pass_edt.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                pass_edt.setHint("");
+                return false;
+            }
+        });
+
+        pass_edt.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(View v, boolean hasFocus) {
+                if (!hasFocus) {
+                    pass_edt.setHint("Enter your password");
+                }
+            }
+        });
     }
 }
 

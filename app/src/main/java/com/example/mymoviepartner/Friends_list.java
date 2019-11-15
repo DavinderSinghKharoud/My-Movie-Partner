@@ -48,7 +48,6 @@ public class Friends_list extends Fragment {
     private DatabaseReference mFriendsRef;
     private FirebaseUser currentUser;
     private ProgressBar progressBar;
-    private int change = 0;
     private TextView emptyView;
     //Adapter and list
     private Friends_Adapter friends_adapter;
@@ -56,6 +55,7 @@ public class Friends_list extends Fragment {
     private ChildEventListener mChildEventListener;
     private AlertDialog.Builder alertDialogBuilder;
     private AlertDialog dialog;
+    private boolean checker = true;
     //user details
 
 
@@ -70,6 +70,15 @@ public class Friends_list extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_friends_list, container, false);
 
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
         emptyView = (TextView) view.findViewById(R.id.empty_view);
 
         //Referencing Navigation View and checking navigation menu item as home
@@ -81,34 +90,38 @@ public class Friends_list extends Fragment {
 
 
         mFirebaseDatabase = FirebaseDatabase.getInstance();
-//getting reference from the database
+        //getting reference from the database
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
         mFriendsRef = mFirebaseDatabase.getReference("MessageRooms");
 
 
         //setting up progress bar
         progressBar = view.findViewById(R.id.progress_bar_friendsList);
-
-
+        progressBar.setVisibility(View.INVISIBLE);
 
         //setting up recycler view
         settingUpRecyclerView(view);
 
-        addChildEventListener();
-        changeFriends();
+        if (checker == true) {
+            addChildEventListener();
+            changeFriends();
+
+            //fetch the friends List
+            //     fetchFriendsList();
 
 
-        //fetch the friends List
-        //     fetchFriendsList();
+        }
 
 
-
-
-        return view;
     }
 
+
+    /**
+     * creating child event listener for the messsage rooms
+     */
+
     private void addChildEventListener() {
-        change = 0;
+
 
         mChildEventListener = new ChildEventListener() {
             @Override
@@ -124,7 +137,7 @@ public class Friends_list extends Fragment {
 
                 //clearing the list
                 // listFriends.clear();
-                progressBar.setVisibility(View.VISIBLE);
+                // progressBar.setVisibility(View.VISIBLE);
 
 
                 //getting messageRoom
@@ -146,10 +159,9 @@ public class Friends_list extends Fragment {
                 }
 
 
-                friends_adapter.notifyDataSetChanged();
+                // friends_adapter.notifyDataSetChanged();
 
-                adapterCheck();
-                progressBar.setVisibility(View.INVISIBLE);
+                // progressBar.setVisibility(View.INVISIBLE);
                 // changeVisibility();
             }
 
@@ -160,7 +172,25 @@ public class Friends_list extends Fragment {
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                fetchFriendsList();
+
+                String messageRoomID = dataSnapshot.getKey();
+
+                int index = 0;
+                for (int i = 0; i < listFriends.size(); i++) {
+                    FriendsModel friendsModel = listFriends.get(i);
+                    String messageRoomIdFromFriends = friendsModel.getRoomID();
+
+                    if (messageRoomID.equals(messageRoomIdFromFriends)) {
+                        listFriends.remove(index);
+                        friends_adapter.notifyItemRemoved(index);
+                        break;
+                    } else {
+                        index++;
+                    }
+
+
+
+                }
             }
 
             @Override
@@ -181,13 +211,12 @@ public class Friends_list extends Fragment {
      */
     private void fetchFriendsList() {
 
+        listFriends.clear();
+
         mFriendsRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-
-                //clearing the list
-                listFriends.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
@@ -231,41 +260,71 @@ public class Friends_list extends Fragment {
         //getting Room reference
         DatabaseReference mMessages = mFirebaseDatabase.getReference("Messages");
 
-        Query query = mMessages.orderByChild("messageRoomID").equalTo(messageRoomId);
+        Query query = mMessages.orderByChild("messageRoomID").equalTo(messageRoomId).limitToLast(1);
 
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
+        FriendsModel friend = new FriendsModel(ImageURl, otherUserName, "", messageRoomId, OtherUserId);
+        listFriends.add(0, friend);
+
+        friends_adapter.notifyItemInserted(0);
+
+        String test = "";
+        query.addChildEventListener(new ChildEventListener() {
             @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 String lastMessage = "";
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    //getting message object
-                    MessageModel message = snapshot.getValue(MessageModel.class);
+                //getting message object
+                MessageModel message = dataSnapshot.getValue(MessageModel.class);
 
 
-                    lastMessage = message.getMessageDesc();
+                lastMessage = message.getMessageDesc();
+                String messageRoomIdFromDesc = message.getMessageRoomID();
+
+
+                int index = 0;
+                for (int i = 0; i < listFriends.size(); i++) {
+                    FriendsModel friendsModel = listFriends.get(i);
+                    String messageRoomIdFromFriends = friendsModel.getRoomID();
+
+                    if (messageRoomIdFromDesc.equals(messageRoomIdFromFriends)) {
+                        break;
+                    } else {
+                        index++;
+                    }
 
 
                 }
 
-                FriendsModel friend = new FriendsModel(ImageURl, otherUserName, lastMessage, messageRoomId, OtherUserId);
-                listFriends.add(0, friend);
 
-                friends_adapter.notifyDataSetChanged();
+                listFriends.get(index).setLastMessage(lastMessage);
 
-                changeVisibility();
+                friends_adapter.notifyItemChanged(index);
 
-                //dismissing the progress bar
-                progressBar.setVisibility(View.INVISIBLE);
+
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG);
             }
         });
+
+
 
 
     }
@@ -279,6 +338,7 @@ public class Friends_list extends Fragment {
 
         DatabaseReference mOtherUserRef = mFirebaseDatabase.getReference("Users").child(userId);
 
+        String user = "0";
         mOtherUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -364,11 +424,15 @@ public class Friends_list extends Fragment {
         });
     }
 
+    /**
+     * delete the object from the database
+     * @param position
+     */
     private void deleteFriend(int position) {
         FriendsModel friend = listFriends.get(position);
 
-        listFriends.remove(position);
-        friends_adapter.notifyDataSetChanged();
+       // listFriends.remove(position);
+        //friends_adapter.notifyItemRemoved(position);
         mFriendsRef.child(friend.getRoomID()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -428,8 +492,8 @@ public class Friends_list extends Fragment {
 
         messageScreen.setArguments(bundle);
 
-        mFriendsRef.removeEventListener(mChildEventListener);
-        listFriends.clear();
+        // mFriendsRef.removeEventListener(mChildEventListener);
+        // listFriends.clear();
 
         //Adding again the home fragment and replacing it with message fragment
         getFragmentManager().beginTransaction()
@@ -449,16 +513,32 @@ public class Friends_list extends Fragment {
     }
 
 
-    private void adapterCheck(){
+    private void adapterCheck() {
         friends_adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
             @Override
             public void onChanged() {
                 super.onChanged();
 
-                checkEmpty();            }
+                checkEmpty();
+            }
         });
     }
+
     void checkEmpty() {
         emptyView.setVisibility(friends_adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        //gg
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        checker = false;
+    }
+
+
 }

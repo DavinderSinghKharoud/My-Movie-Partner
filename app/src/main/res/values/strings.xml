@@ -9,10 +9,10 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <string-array name="names">
-        <item>By title</item>
-        <item>By user name</item>
-        <item>By location</item>
-        <item>By gender</item>
+        <item>Search By Title</item>
+        <item>Search By Username</item>
+        <item>Search By Location</item>
+        <item>Search By Gender</item>
     </string-array>
     <string name="title_activity_maps">Map</string>
 

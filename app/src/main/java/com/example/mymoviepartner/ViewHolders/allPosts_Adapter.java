@@ -2,6 +2,7 @@ package com.example.mymoviepartner.ViewHolders;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,11 +53,14 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
     //creating interface for clicking
     public interface onClickMessageListener {
         void onMessageClick(int position);
-        void onItemLongClick(View view,int position);
+
+        void onItemLongClick(View view, int position);
+
+        void onShareClick(int position);
     }
 
-    public void setOnItemClickListener(onClickMessageListener listener){
-        mListener=listener;
+    public void setOnItemClickListener(onClickMessageListener listener) {
+        mListener = listener;
     }
 
     public static class postViewHolder extends RecyclerView.ViewHolder {
@@ -64,8 +69,10 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
         private View mView;
         private TextView mTitle, mDesc, mDate, mTime, mLocation, mGender, mName, mPostedTime;
         private CircleImageView circleImageView;
+        private ImageView shareButton;
         private Button mMessage;
         private RelativeLayout container;
+        public boolean isClickable;
 
 
         public postViewHolder(@NonNull View itemView, final onClickMessageListener listener) {
@@ -74,7 +81,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
             mView = itemView;
 
             //Views
-            container=mView.findViewById(R.id.container_allposts);
+            container = mView.findViewById(R.id.container_allposts);
             mTitle = mView.findViewById(R.id.textView2_title);
             mDesc = mView.findViewById(R.id.textView3_description);
             mDate = mView.findViewById(R.id.textView4_date);
@@ -84,15 +91,32 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
             mName = mView.findViewById(R.id.textView1_name);
             circleImageView = mView.findViewById(R.id.profile_picture_viewPost);
             mPostedTime = mView.findViewById(R.id.textView8_postedOn);
+            shareButton = mView.findViewById(R.id.imageView_share);
 
 
             mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(listener!=null){
-                        int position=getAdapterPosition();
-                        if(position!=RecyclerView.NO_POSITION){
+                    if (listener != null) {
+
+
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+
                             listener.onMessageClick(position);
+
+                            //To prevent double click
+                            if (isClickable) {
+                                return;
+                            }
+                            isClickable = true;
+                            view.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    isClickable = false;
+                                }
+                            }, 500);
+
                         }
                     }
                 }
@@ -105,11 +129,25 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                         int position = getAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION) {
-                            listener.onItemLongClick(view,position);
+                            listener.onItemLongClick(view, position);
                         }
                     }
 
                     return true;
+                }
+            });
+
+            shareButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onShareClick(position);
+                        }
+                    }
+
                 }
             });
 
@@ -121,12 +159,13 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
     public postViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.view_profile_layout, parent, false);
-        postViewHolder pvh = new postViewHolder(v,mListener);
+        postViewHolder pvh = new postViewHolder(v, mListener);
         return pvh;
     }
 
     /**
      * constructor to be called
+     *
      * @param postList
      * @param context
      * @param isAdded
@@ -145,9 +184,9 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
         PostModel postModel = mPostList.get(position);
 
-        holder.circleImageView.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_recycleview));
+        holder.circleImageView.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_recycleview));
 
-        holder.container.setAnimation(AnimationUtils.loadAnimation(context,R.anim.fade_scale_animation));
+        holder.container.setAnimation(AnimationUtils.loadAnimation(context, R.anim.fade_scale_animation));
         //Set data to views
         holder.mTitle.setText(postModel.getTitle());
         holder.mDesc.setText(postModel.getDescription());
@@ -170,7 +209,6 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
 
     }
-
 
 
     /**
@@ -406,9 +444,14 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-            mPostList.clear();
-            mPostList.addAll((List) filterResults.values);
-            notifyDataSetChanged();
+            try {
+
+                mPostList.clear();
+                mPostList.addAll((List) filterResults.values);
+                notifyDataSetChanged();
+            } catch (Exception e) {
+
+            }
 
         }
     };
@@ -419,7 +462,13 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
      * @param postList
      */
     public void setmPostListFull(ArrayList<PostModel> postList) {
-        this.mPostListFull = new ArrayList<>(postList);
+        try {
+
+            this.mPostListFull = new ArrayList<>(postList);
+
+        } catch (Exception e) {
+
+        }
 
     }
 
@@ -468,26 +517,26 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
         userDetails.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-               try{
-                   //getting the user details and saving in the user model
-                   userModel mUser = dataSnapshot.getValue(userModel.class);
+                try {
+                    //getting the user details and saving in the user model
+                    userModel mUser = dataSnapshot.getValue(userModel.class);
 
-                   //setting username and gender
-                   holder.mName.setText(mUser.getName());
-                   holder.mGender.setText("Gender: " + mUser.getGender());
+                    //setting username and gender
+                    holder.mName.setText(mUser.getName());
+                    holder.mGender.setText("Gender: " + mUser.getGender());
 
-                   //getting image URL
-                   String imageURl = mUser.getImageURL();
-                   //setting image
-                   if (isAdded)
-                       if (imageURl.equals("default")) {
-                           holder.circleImageView.setImageResource(R.drawable.ic_launcher_background);
-                       } else {
-                           Glide.with(context).load(imageURl).into(holder.circleImageView);
-                       }
-               }catch (Exception e){
+                    //getting image URL
+                    String imageURl = mUser.getImageURL();
+                    //setting image
+                    if (isAdded)
+                        if (imageURl.equals("default")) {
+                            holder.circleImageView.setImageResource(R.drawable.ic_launcher_background);
+                        } else {
+                            Glide.with(context).load(imageURl).into(holder.circleImageView);
+                        }
+                } catch (Exception e) {
 
-               }
+                }
 
             }
 

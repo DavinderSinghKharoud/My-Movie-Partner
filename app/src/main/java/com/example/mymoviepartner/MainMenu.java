@@ -61,7 +61,7 @@ public class MainMenu extends AppCompatActivity implements
         nav_name = (TextView) header.findViewById(R.id.navigation_name);
         nav_email = (TextView) header.findViewById(R.id.navigation_email);
         nav_profile_pic = (CircleImageView) header.findViewById(R.id.navigation_image);
-    
+
         //Getting user and firebase data instance
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
@@ -80,14 +80,15 @@ public class MainMenu extends AppCompatActivity implements
         //Changing user data in the navigation bar
         changeNavigationBarData();
 
-
-        if (savedInstanceState == null) {
+        if (savedInstanceState == null ) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new HomeFragment(), "home").commit();
 
             navigationView.setCheckedItem(R.id.nav_home);
 
         }
+
+
 
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_main);
@@ -160,7 +161,7 @@ public class MainMenu extends AppCompatActivity implements
      */
     private void checkUserLoggedIn() {
         //If user is not logged in
-        if (mAuth.getCurrentUser() == null) {
+        if (mAuth.getCurrentUser() == null && mAuth.getCurrentUser().isEmailVerified()) {
             startActivity(new Intent(getApplicationContext(), FirstScreen.class));
         }
 
