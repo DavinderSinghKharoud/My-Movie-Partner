@@ -4,15 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.example.mymoviepartner;">
 
+
     <item
-        android:id="@+id/action_search"
+        android:id="@+id/action_search1"
         android:icon="@drawable/ic_search_black_24dp"
         android:orderInCategory="100"
+        android:theme="@style/WhiteCursorSearchView"
         android:title="search"
+        app:iconifiedByDefault="false"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="always"
-        android:theme="@android:style/Theme.Holo.Light"
         ></item>
-
 
 </menu>

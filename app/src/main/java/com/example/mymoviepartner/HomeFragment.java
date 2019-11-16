@@ -3,6 +3,7 @@ package com.example.mymoviepartner;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
@@ -10,6 +11,8 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -23,6 +26,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.Spinner;
@@ -42,7 +47,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.miguelcatalan.materialsearchview.MaterialSearchView;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
@@ -84,7 +88,6 @@ public class HomeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
 
-
         //To check the internet connectivity
         isOnline();
 
@@ -103,7 +106,6 @@ public class HomeFragment extends Fragment {
         //Referencing Navigation View and checking navigation menu item as home
         NavigationView navigationView = getActivity().findViewById(R.id.nav_view);
         navigationView.setCheckedItem(R.id.nav_home);
-
 
         //getting reference from the database
         currentUser = FirebaseAuth.getInstance().getCurrentUser();
@@ -208,7 +210,7 @@ public class HomeFragment extends Fragment {
             public void onMessageClick(int position) {
 
 
-               // progressBar.setVisibility(View.VISIBLE);
+                // progressBar.setVisibility(View.VISIBLE);
 
                 //getting post model
                 PostModel postModel = listPost.get(position);
@@ -219,11 +221,11 @@ public class HomeFragment extends Fragment {
                 if (!postCreaterID.equals(currentUser.getUid())) {
                     createMessageRoom(postCreaterID);
 
-                   // progressBar.setVisibility(View.INVISIBLE);
+                    // progressBar.setVisibility(View.INVISIBLE);
                 } else {
                     Toast.makeText(getContext(), "You can't message yourself", Toast.LENGTH_LONG).show();
 
-                   // progressBar.setVisibility(View.INVISIBLE);
+                    // progressBar.setVisibility(View.INVISIBLE);
                 }
 
 
@@ -236,8 +238,8 @@ public class HomeFragment extends Fragment {
 
                 Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                String shareBody = "Check this post on MyMoviePartner App:\n Title: " +postModel.getTitle()
-                        +"\nPost Description: "+postModel.getDescription();
+                String shareBody = "Check this post on MyMoviePartner App:\n Title: " + postModel.getTitle()
+                        + "\nPost Description: " + postModel.getDescription();
                 String shareSubject = "Checkout our MyMoviePartner application from the GitHub: \n https://github.com/DavinderSinghKharoud/My-Movie-Partner";
 
                 sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
@@ -252,8 +254,8 @@ public class HomeFragment extends Fragment {
 
                 Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                 sharingIntent.setType("text/plain");
-                String shareBody = "Check this post on MyMoviePartner App:\n Title: " +postModel.getTitle()
-                        +"\nPost Description: "+postModel.getDescription();
+                String shareBody = "Check this post on MyMoviePartner App:\n Title: " + postModel.getTitle()
+                        + "\nPost Description: " + postModel.getDescription();
                 String shareSubject = "Checkout our MyMoviePartner application from the GitHub: \n https://github.com/DavinderSinghKharoud/My-Movie-Partner";
 
                 sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
@@ -389,10 +391,30 @@ public class HomeFragment extends Fragment {
         //inflating the search field
         inflater.inflate(R.menu.search_menu, menu);
 
-        MenuItem myActionMenuItem = menu.findItem(R.id.action_search);
+        MenuItem myActionMenuItem = menu.findItem(R.id.action_search1);
+
+
         android.widget.SearchView searchView = (android.widget.SearchView) myActionMenuItem.getActionView();
+       // searchView.setBackgroundResource(R.drawable.search_draw);
+        searchView.setQueryHint("Search");
+       // searchView.setBackgroundColor(Color.MAGENTA);
+        int searchSrcTextId = getResources().getIdentifier("android:id/search_src_text", null, null);
+        EditText searchEditText = (EditText) searchView.findViewById(searchSrcTextId);
+        searchEditText.setTextColor(Color.WHITE);
+        searchEditText.setHintTextColor(Color.WHITE);
+
+        int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
+        // Getting the 'search_plate' LinearLayout.
+        View searchPlate = searchView.findViewById(searchPlateId);
+        // Setting background of 'search_plate' to earlier defined drawable.
+    //    searchPlate.setBackgroundResource(R.drawable.search_draw);
+        searchView.setIconifiedByDefault(true);
 
 
+
+        int closeButtonId = getResources().getIdentifier("android:id/search_close_btn", null, null);
+        ImageView closeButtonImage = (ImageView) searchView.findViewById(closeButtonId);
+        closeButtonImage.setImageResource(R.drawable.ic_close_black_24dp);
 
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
@@ -469,4 +491,6 @@ public class HomeFragment extends Fragment {
     public void onResume() {
         super.onResume();
     }
+
+
 }
