@@ -183,7 +183,7 @@ public class Register extends Fragment {
                                     if(task.isSuccessful()){
                                         progressDialog.dismiss();
                                         String ImageURL = "default";
-                                        userModel mUser = new userModel(Name, Gender, ImageURL);
+                                        userModel mUser = new userModel(Name, Gender, ImageURL,"offline");
                                         FirebaseDatabase.getInstance().getReference("Users")
                                                 .child(FirebaseAuth.getInstance().getCurrentUser().getUid())
                                                 .setValue(mUser);

@@ -37,6 +37,7 @@ public class View_Messages_Adapter extends RecyclerView.Adapter<View_Messages_Ad
         //Creating variables
         private View mView;
         private TextView show_messages;
+        private TextView show_time;
 
 
         public messageViewHolder(@NonNull View itemView) {
@@ -44,6 +45,7 @@ public class View_Messages_Adapter extends RecyclerView.Adapter<View_Messages_Ad
             mView = itemView;
             //referencing
             show_messages = mView.findViewById(R.id.show_message);
+            show_time=mView.findViewById(R.id.chat_time);
         }
     }
 
@@ -69,6 +71,7 @@ public class View_Messages_Adapter extends RecyclerView.Adapter<View_Messages_Ad
         MessageModel message = mMessageList.get(position);
         //setting text
         holder.show_messages.setText(message.getMessageDesc());
+        holder.show_time.setText(String.valueOf(message.getTime_stamp()));
 
     }
 

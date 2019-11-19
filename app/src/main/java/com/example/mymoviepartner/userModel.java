@@ -5,11 +5,17 @@ public class userModel {
     private String Name;
     private String Gender;
     private String ImageURL;
+    private String status;
 
-    public userModel(String name, String gender) {
-        Name = name;
-        Gender = gender;
+    public String getStatus() {
+        return status;
     }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+
 
     public String getImageURL() {
         return ImageURL;
@@ -19,10 +25,11 @@ public class userModel {
         ImageURL = imageURL;
     }
 
-    public userModel(String name, String gender, String imageURL) {
+    public userModel(String name, String gender, String imageURL,String status) {
         Name = name;
         Gender = gender;
         ImageURL = imageURL;
+        this.status=status;
     }
 
     public userModel() {

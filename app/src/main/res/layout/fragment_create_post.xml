@@ -107,7 +107,7 @@
                     android:drawableLeft="@drawable/location"
                     android:drawablePadding="5dp"
                     android:hint="Location"
-                    android:textSize="23dp"
+                    android:textSize="16dp"
                     android:padding="5dp"
                     android:inputType="text"
                     android:maxLength="40"

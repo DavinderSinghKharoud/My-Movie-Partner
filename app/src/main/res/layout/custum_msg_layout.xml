@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -7,33 +8,61 @@
         android:id="@+id/messageList_image"
         android:layout_width="96dp"
         android:layout_height="96dp"
+        android:layout_margin="5dp"
         android:src="@mipmap/ic_launcher"
-        app:civ_border_width="2dp"
-        android:layout_margin="5dp"/>
+        app:civ_border_width="2dp" />
 
     <TextView
         android:id="@+id/messageList_user_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/messageList_image"
-        android:text="Name"
-        android:maxLines="1"
-        android:textSize="24sp"
-        android:textColor="@android:color/black"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="20dp"
-        android:layout_marginLeft="5dp"/>
+        android:layout_toRightOf="@id/messageList_image"
+        android:maxLines="1"
+        android:text="Name"
+        android:textColor="@android:color/black"
+        android:textSize="24sp" />
 
     <TextView
         android:id="@+id/message_last_msg"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@id/messageList_image"
         android:layout_below="@id/messageList_user_name"
-        android:text="Message"
-        android:textSize="20sp"
-        android:maxLines="1"
-        android:textColor="@color/colorPrimary"
+        android:layout_marginLeft="5dp"
         android:layout_marginTop="5dp"
-        android:layout_marginLeft="5dp"/>
+        android:layout_toRightOf="@id/messageList_image"
+        android:maxLines="1"
+        android:text="Message"
+        android:textColor="@color/colorPrimary"
+        android:textSize="20sp" />
 
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_on"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_below="@+id/message_last_msg"
+        android:layout_toEndOf="@+id/messageList_image"
+        android:layout_toRightOf="@+id/messageList_image"
+        android:src="@mipmap/ic_launcher"
+        app:civ_border_color="#05df29"
+        app:civ_border_width="10dp"
+        android:visibility="gone"
+        android:layout_marginLeft="-19dp"/>
+
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/img_off"
+        android:layout_width="15dp"
+        android:layout_height="15dp"
+        android:layout_below="@+id/message_last_msg"
+        android:layout_toEndOf="@+id/messageList_image"
+        android:layout_toRightOf="@+id/messageList_image"
+        android:src="@mipmap/ic_launcher"
+        app:civ_border_color="#bfbfbf"
+        app:civ_border_width="10dp"
+        android:visibility="gone"
+        android:layout_marginLeft="-19dp">
+
+    </de.hdodenhof.circleimageview.CircleImageView>
 </RelativeLayout>

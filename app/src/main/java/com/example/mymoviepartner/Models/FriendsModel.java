@@ -7,16 +7,26 @@ public class FriendsModel {
     private String lastMessage;
     private String RoomID;
     private String userID;
+    private String status;
 
     public FriendsModel() {
     }
 
-    public FriendsModel(String imageUrl, String userName, String lastMessage, String roomID, String userID) {
+    public FriendsModel(String imageUrl, String userName, String lastMessage, String roomID, String userID,String status) {
         ImageUrl = imageUrl;
         this.userName = userName;
         this.lastMessage = lastMessage;
         RoomID = roomID;
         this.userID = userID;
+        this.status=status;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public String getRoomID() {

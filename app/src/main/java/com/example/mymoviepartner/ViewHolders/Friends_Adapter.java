@@ -1,9 +1,11 @@
 package com.example.mymoviepartner.ViewHolders;
 
 import android.content.Context;
+import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,7 +30,7 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
     public interface OnItemClickListener {
         void onItemClick(int positon);
 
-        void onItemLongClick(View view,int position);
+        void onItemLongClick(View view, int position);
 
     }
 
@@ -41,6 +43,8 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
         private CircleImageView circleImageView;
         private TextView user_name;
         private TextView last_message;
+        private ImageView img_on;
+        private ImageView img_off;
 
         public FriendsViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
@@ -49,6 +53,8 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
             circleImageView = itemView.findViewById(R.id.messageList_image);
             user_name = itemView.findViewById(R.id.messageList_user_name);
             last_message = itemView.findViewById(R.id.message_last_msg);
+            img_on = itemView.findViewById(R.id.img_on);
+            img_off = itemView.findViewById(R.id.img_off);
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -70,7 +76,7 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
                         int position = getAdapterPosition();
 
                         if (position != RecyclerView.NO_POSITION) {
-                            listener.onItemLongClick(view,position);
+                            listener.onItemLongClick(view, position);
                         }
                     }
 
@@ -109,12 +115,22 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
         //getting imageURL
         String imageURl = friend.getImageUrl();
 
-        if (isAdded)
+        if (isAdded) {
             if (imageURl.equals("default")) {
                 holder.circleImageView.setImageResource(R.drawable.ic_launcher_background);
             } else {
                 Glide.with(mContext).load(imageURl).into(holder.circleImageView);
             }
+        }
+
+        if(friend.getStatus().equals("online")){
+            holder.img_on.setVisibility(View.VISIBLE);
+            holder.img_off.setVisibility(View.GONE);
+        }else{
+            holder.img_on.setVisibility(View.GONE);
+            holder.img_off.setVisibility(View.VISIBLE);
+        }
+
 
     }
 
@@ -122,7 +138,6 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
     public int getItemCount() {
         return mFriendsList.size();
     }
-
 
 
 }

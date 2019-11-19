@@ -9,6 +9,7 @@
         <item name="android:windowAnimationStyle">@style/CustomActivityAnimation</item>
         <item name="autoCompleteTextViewStyle">@style/cursorColor</item>
 
+
     </style>
 
     <style name="AppThemeAtOpen" parent="Theme.AppCompat.Light.NoActionBar">

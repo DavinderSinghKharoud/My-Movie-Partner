@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.TestLooperManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import android.widget.Toast;
 import com.example.mymoviepartner.Models.FriendsModel;
 import com.example.mymoviepartner.Models.MessageModel;
 import com.example.mymoviepartner.Models.MessageRooms;
+import com.example.mymoviepartner.Notification.Token;
 import com.example.mymoviepartner.ViewHolders.Friends_Adapter;
 import com.example.mymoviepartner.ViewHolders.allPosts_Adapter;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -34,6 +36,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.ArrayList;
 
@@ -95,6 +98,7 @@ public class Friends_list extends Fragment {
         mFriendsRef = mFirebaseDatabase.getReference("MessageRooms");
 
 
+
         //setting up progress bar
         progressBar = view.findViewById(R.id.progress_bar_friendsList);
         progressBar.setVisibility(View.INVISIBLE);
@@ -150,6 +154,7 @@ public class Friends_list extends Fragment {
 
                         gettingOtherUserDetails(messageRooms.getUser2(), dataSnapshot.getKey());
 
+
                     } else {
 
                         gettingOtherUserDetails(messageRooms.getUser1(), dataSnapshot.getKey());
@@ -189,7 +194,6 @@ public class Friends_list extends Fragment {
                     }
 
 
-
                 }
             }
 
@@ -205,52 +209,6 @@ public class Friends_list extends Fragment {
         };
     }
 
-    /**
-     * n
-     * adding the friends in to the list
-     */
-    private void fetchFriendsList() {
-
-        listFriends.clear();
-
-        mFriendsRef.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-
-
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-
-                    //getting messageRoom
-                    MessageRooms messageRooms = snapshot.getValue(MessageRooms.class);
-
-
-                    if (messageRooms.getUser1().equals(currentUser.getUid())
-                            || messageRooms.getUser2().equals(currentUser.getUid())) {
-
-                        if (messageRooms.getUser1().equals(currentUser.getUid())) {
-
-                            gettingOtherUserDetails(messageRooms.getUser2(), snapshot.getKey());
-
-                        } else {
-
-                            gettingOtherUserDetails(messageRooms.getUser1(), snapshot.getKey());
-
-                        }
-
-                    }
-
-
-                }
-                friends_adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG);
-            }
-        });
-    }
 
     /**
      * getting last Message to display on the screen
@@ -262,10 +220,13 @@ public class Friends_list extends Fragment {
 
         Query query = mMessages.orderByChild("messageRoomID").equalTo(messageRoomId).limitToLast(1);
 
-        FriendsModel friend = new FriendsModel(ImageURl, otherUserName, "", messageRoomId, OtherUserId);
+        FriendsModel friend = new FriendsModel(ImageURl, otherUserName, "", messageRoomId, OtherUserId, "offline");
         listFriends.add(0, friend);
 
         friends_adapter.notifyItemInserted(0);
+
+        //checking the status(online/offline)
+        checkStatus();
 
         String test = "";
         query.addChildEventListener(new ChildEventListener() {
@@ -301,6 +262,8 @@ public class Friends_list extends Fragment {
                 friends_adapter.notifyItemChanged(index);
 
 
+
+
             }
 
             @Override
@@ -325,8 +288,13 @@ public class Friends_list extends Fragment {
         });
 
 
+    }
 
-
+    private void updateToken(String token) {
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token token1 = new Token(token);
+        reference.child(fUser.getUid()).setValue(token1);
     }
 
     /**
@@ -338,7 +306,6 @@ public class Friends_list extends Fragment {
 
         DatabaseReference mOtherUserRef = mFirebaseDatabase.getReference("Users").child(userId);
 
-        String user = "0";
         mOtherUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -350,6 +317,8 @@ public class Friends_list extends Fragment {
                 String ImageURl = mUser.getImageURL();
 
 
+                updateToken(FirebaseInstanceId.getInstance().getToken());
+
                 gettingLastMessage(messageRoomID, userId, otherUserName, ImageURl);
 
             }
@@ -360,6 +329,49 @@ public class Friends_list extends Fragment {
                 Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG);
             }
         });
+
+    }
+
+    /**
+     * check the status of the friends
+     */
+    private void checkStatus() {
+
+
+        for (int index = 0; index < listFriends.size(); index++) {
+            FriendsModel friendsModel = listFriends.get(index);
+            String userIdFromList = friendsModel.getUserID();
+
+
+            DatabaseReference mOtherUserRef = mFirebaseDatabase.getReference("Users").child(userIdFromList).child("status");
+            Query query=mOtherUserRef.equalTo("status");
+
+
+            final int finalIndex = index;
+            final int finalIndex1 = index;
+
+            mOtherUserRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    //userModel mUser = dataSnapshot.getValue(userModel.class);
+
+                   // String userID = dataSnapshot.getKey();
+
+                    String status = dataSnapshot.getValue(String.class);
+
+
+                    listFriends.get(finalIndex).setStatus(status);
+
+                    friends_adapter.notifyItemChanged(finalIndex);
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+        }
 
     }
 
@@ -389,12 +401,19 @@ public class Friends_list extends Fragment {
             public void onItemLongClick(View view, final int position) {
 
 
+
                 //create an AlertDialog
                 alertDialogBuilder = new AlertDialog.Builder(getContext());
-                alertDialogBuilder.setTitle("It will also delete messages.");
+
+
+
+
                 LayoutInflater inflater2 = LayoutInflater.from(getContext());
 
                 view = inflater2.inflate(R.layout.confirmation_dialog, null);
+
+                TextView textTitle=view.findViewById(R.id.textAlert);
+                textTitle.setText("Delete Chat?");
 
                 Button noButton = (Button) view.findViewById(R.id.nobtn);
                 Button yesButton = (Button) view.findViewById(R.id.yesbtn);
@@ -426,12 +445,13 @@ public class Friends_list extends Fragment {
 
     /**
      * delete the object from the database
+     *
      * @param position
      */
     private void deleteFriend(int position) {
         FriendsModel friend = listFriends.get(position);
 
-       // listFriends.remove(position);
+        // listFriends.remove(position);
         //friends_adapter.notifyItemRemoved(position);
         mFriendsRef.child(friend.getRoomID()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override

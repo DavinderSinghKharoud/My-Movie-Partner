@@ -20,9 +20,9 @@
         <item
             android:icon="@drawable/share"
             android:id="@+id/nav_share"
-            android:title="Share"/>
+            android:title="Share App"/>
 
-    </group>
+
 
     <item
         android:id="@+id/nav_settings"
@@ -30,8 +30,7 @@
         android:icon="@drawable/settings">
 
         <menu>
-            <group
-                android:checkableBehavior="single">
+
                 <item
                     android:id="@+id/nav_profile"
                     android:title="Profile"
@@ -40,6 +39,8 @@
                     android:id="@+id/nav_logout"
                     android:title="Log out"
                     android:icon="@drawable/logout"/>
-            </group>
+
         </menu>
-    </item></menu>
+
+    </item>
+    </group></menu>

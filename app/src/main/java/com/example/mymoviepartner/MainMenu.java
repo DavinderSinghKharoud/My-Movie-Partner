@@ -29,6 +29,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainMenu extends AppCompatActivity implements
@@ -80,15 +82,13 @@ public class MainMenu extends AppCompatActivity implements
         //Changing user data in the navigation bar
         changeNavigationBarData();
 
-        if (savedInstanceState == null ) {
+        if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.fragment_container, new HomeFragment(), "home").commit();
 
             navigationView.setCheckedItem(R.id.nav_home);
 
         }
-
-
 
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout_main);
@@ -252,14 +252,31 @@ public class MainMenu extends AppCompatActivity implements
         }
 
         super.onBackPressed();
-        /**
 
-         else {
-         Intent intent = new Intent(Intent.ACTION_MAIN);
-         intent.addCategory(Intent.CATEGORY_HOME);
-         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-         startActivity(intent);
-         }
-         **/
     }
+
+    /**
+     * changing status by passing string
+     * @param status
+     */
+    private void status(String status) {
+        HashMap<String, Object> hashMap = new HashMap<>();
+        hashMap.put("status", status);
+
+        userDetails.updateChildren(hashMap);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        status("online");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        status("offline");
+    }
+
+
 }
