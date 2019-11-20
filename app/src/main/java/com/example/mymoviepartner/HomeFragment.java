@@ -130,7 +130,7 @@ public class HomeFragment extends Fragment {
             public void onChanged() {
                 super.onChanged();
                 if(listPost.isEmpty()){
-                    Toast.makeText(getContext(),"empty",Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getContext(),"empty",Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -405,7 +405,6 @@ public class HomeFragment extends Fragment {
 
 
         android.widget.SearchView searchView = (android.widget.SearchView) myActionMenuItem.getActionView();
-       // searchView.setBackgroundResource(R.drawable.search_draw);
         searchView.setQueryHint("Search");
        // searchView.setBackgroundColor(Color.MAGENTA);
         int searchSrcTextId = getResources().getIdentifier("android:id/search_src_text", null, null);

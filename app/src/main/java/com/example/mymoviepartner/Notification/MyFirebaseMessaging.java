@@ -54,34 +54,6 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
 
     }
 
-    private void sendOreoNotification(RemoteMessage remoteMessage) {
-
-        String user = remoteMessage.getData().get("user");
-        String icon = remoteMessage.getData().get("icon");
-        String title = remoteMessage.getData().get("title");
-        String body = remoteMessage.getData().get("body");
-
-        RemoteMessage.Notification notification = remoteMessage.getNotification();
-        int j = Integer.parseInt(user.replaceAll("[\\D]", ""));
-        Intent intent = new Intent(this, MainMenu.class);
-        Bundle bundle = new Bundle();
-        bundle.putString("userid", user);
-        intent.putExtras(bundle);
-        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-        PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
-
-        Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-
-        OreoNotification oreoNotification = new OreoNotification(getBaseContext());
-        Notification.Builder builder = oreoNotification.getOreaNotification(title, body, pendingIntent, defaultSound, icon);
-
-        int i = 0;
-        if (j > 0) {
-            i = j;
-        }
-
-        oreoNotification.getManager().notify(i, builder.build());
-    }
 
     public void showNotification(Context context, RemoteMessage remoteMessage) {
 
@@ -142,9 +114,14 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, j, intent, PendingIntent.FLAG_ONE_SHOT);
 
+
+        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.mymoviepartner);
+
         Uri defaultSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(Integer.parseInt(icon))
+                .setLargeIcon(bitmap)
+                .setColor(getResources().getColor(R.color.colorPrimaryDark))
                 .setContentTitle(title)
                 .setContentText(body)
                 .setAutoCancel(true)

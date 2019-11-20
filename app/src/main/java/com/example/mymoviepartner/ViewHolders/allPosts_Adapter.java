@@ -3,6 +3,7 @@ package com.example.mymoviepartner.ViewHolders;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Handler;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -259,6 +260,13 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                         filteredList.add(item);
                     }
                 }
+
+                if (filteredList.isEmpty()) {
+
+                    Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
+                }
             }
 
             FilterResults results = new FilterResults();
@@ -295,6 +303,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                     //getting user id
                     String userId = item.getUser_id();
 
+
                     DatabaseReference specificUser = userRef.child(userId);
 
                     specificUser.addValueEventListener(new ValueEventListener() {
@@ -318,6 +327,13 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
                             }
 
+
+                            if (filteredList.isEmpty()) {
+
+                                Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
+                                toast.setGravity(Gravity.CENTER, 0, 0);
+                                toast.show();
+                            }
 
                             mPostList.clear();
                             mPostList.addAll(filteredList);
@@ -412,6 +428,12 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             mPostList.clear();
+            if (((List)filterResults.values).isEmpty()) {
+
+                Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
+                toast.setGravity(Gravity.CENTER, 0, 0);
+                toast.show();
+            }
             mPostList.addAll((List) filterResults.values);
             notifyDataSetChanged();
 
@@ -438,6 +460,13 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                         //adding to filter list
                         filteredList.add(item);
                     }
+                }
+
+                if (filteredList.isEmpty()) {
+
+                    Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
+                    toast.setGravity(Gravity.CENTER, 0, 0);
+                    toast.show();
                 }
             }
 

@@ -282,7 +282,7 @@ public class MessageScreen extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(CurrentUserID, R.mipmap.ic_launcher, msg, name, OtherUserID);
+                    Data data = new Data(OtherUserID, R.mipmap.ic_launcher, msg, name, CurrentUserID);
 
                     Sender sender = new Sender(data, token.getToken());
 
