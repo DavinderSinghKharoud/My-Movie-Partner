@@ -39,8 +39,8 @@ public class MyFirebaseMessaging extends FirebaseMessagingService {
         String currentUser = preferences.getString("currentuser", "none");
 
         FirebaseUser firebaseUser = FirebaseAuth.getInstance().getCurrentUser();
-
-        if (firebaseUser != null && !sented.equals(firebaseUser.getUid())) {
+        String currentUserIdFirebase = firebaseUser.getUid();
+        if (firebaseUser != null && !sented.equals(currentUserIdFirebase)) {
             if (!currentUser.equals(user)) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
