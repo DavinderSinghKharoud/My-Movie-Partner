@@ -257,13 +257,13 @@ public class MessageScreen extends Fragment {
         final String msg = messDesc;
 
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(CurrentUserID);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(OtherUserID);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 userModel user = dataSnapshot.getValue(userModel.class);
                 if (notify)
-                    sendNotification(CurrentUserID, user.getName(), msg);
+                    sendNotification(OtherUserID, user.getName(), msg);
                 notify = false;
             }
 
@@ -274,7 +274,7 @@ public class MessageScreen extends Fragment {
         });
     }
 
-    private void sendNotification(String otherUserID, String name, String msg) {
+    private void sendNotification(String otherUserID, final String name, final String msg) {
         DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
         Query query = tokens.orderByKey().equalTo(otherUserID);
         query.addValueEventListener(new ValueEventListener() {
@@ -282,7 +282,7 @@ public class MessageScreen extends Fragment {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(CurrentUserID, R.mipmap.ic_launcher, "sunny", "New Message", CurrentUserID);
+                    Data data = new Data(CurrentUserID, R.mipmap.ic_launcher, msg, name, OtherUserID);
 
                     Sender sender = new Sender(data, token.getToken());
 

@@ -125,6 +125,16 @@ public class HomeFragment extends Fragment {
         //setting up recycler view
         setUpRecyclerView();
 
+        allPosts_adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                if(listPost.isEmpty()){
+                    Toast.makeText(getContext(),"empty",Toast.LENGTH_SHORT).show();
+
+                }
+            }
+        });
         return view;
     }
 

@@ -484,7 +484,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
         //getting the difference between the current time and the post time in milliseconds
         long msDiff = Calendar.getInstance().getTimeInMillis() - TimeOfPost;
 
-        //getting the difference of days between today and when the post created
+        //getting the difference of; days between today and when the post created
         String daysDiff = String.valueOf(TimeUnit.MILLISECONDS.toDays(msDiff));
         //getting the difference of hours between today and when the post created
         String hoursDiff = String.valueOf(TimeUnit.MILLISECONDS.toHours(msDiff));
@@ -548,4 +548,6 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
         });
     }
+
+
 }

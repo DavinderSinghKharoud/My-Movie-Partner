@@ -11,6 +11,7 @@ import androidx.fragment.app.FragmentManager;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.mymoviepartner.Notification.Token;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,6 +30,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 
 import java.util.HashMap;
 
@@ -67,6 +70,9 @@ public class MainMenu extends AppCompatActivity implements
         //Getting user and firebase data instance
         mAuth = FirebaseAuth.getInstance();
         firebaseDatabase = FirebaseDatabase.getInstance();
+
+        //set the token for the particular device
+        updateToken(FirebaseInstanceId.getInstance().getToken());
 
         //Getting current user logged IN, to get the email details
         currentUser = mAuth.getCurrentUser();
@@ -108,6 +114,12 @@ public class MainMenu extends AppCompatActivity implements
 
     }
 
+    private void updateToken(String token) {
+        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
+        Token token1 = new Token(token);
+        reference.child(fUser.getUid()).setValue(token1);
+    }
 
     /**
      * Fetching the data from the database and setting up in textviews
@@ -266,16 +278,24 @@ public class MainMenu extends AppCompatActivity implements
         userDetails.updateChildren(hashMap);
     }
 
+    private void currentUser(String userid){
+        SharedPreferences.Editor editor=getSharedPreferences("PREFS",MODE_PRIVATE).edit();
+        editor.putString("currentuser",userid);
+        editor.apply();
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         status("online");
+        currentUser(currentUser.getUid());
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         status("offline");
+        currentUser("none");
     }
 
 

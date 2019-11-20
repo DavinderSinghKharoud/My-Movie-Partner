@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.mymoviepartner.ViewHolders.My_OwnPost_ViewHolder;
@@ -43,6 +44,7 @@ public class User_Own_Posts extends Fragment {
     private FirebaseDatabase mFirebaseDatabase;
     private DatabaseReference mRef;
     private FirebaseUser cuurentUser;
+    private TextView empty_view;
     private FirebaseRecyclerOptions<PostModel> options;
     private FirebaseRecyclerAdapter<PostModel, My_OwnPost_ViewHolder> mFirebaseAdapter;
     private Query query;
@@ -63,6 +65,8 @@ public class User_Own_Posts extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user__own__posts, container, false);
+
+        empty_view = view.findViewById(R.id.empty_view_ownPosts);
 
         //referencing recyclerView and setting fixed size
         recyclerView = view.findViewById(R.id.recyclerView_own_posts);
@@ -92,21 +96,22 @@ public class User_Own_Posts extends Fragment {
                 .setQuery(query, PostModel.class).build();
 
         //Setting adapter
-        mFirebaseAdapter = new FirebaseRecyclerAdapter<PostModel, My_OwnPost_ViewHolder>(options)  {
+        mFirebaseAdapter = new FirebaseRecyclerAdapter<PostModel, My_OwnPost_ViewHolder>(options) {
 
 
             @Override
             protected void onBindViewHolder(@NonNull final My_OwnPost_ViewHolder post_viewHolder, int i, @NonNull final PostModel postModel) {
+
+                empty_view.setVisibility(View.INVISIBLE);
                 //getting user id
                 final String userID = postModel.getUser_id();
 
                 //Getting reference of the post clicked with the help of position
-                DatabaseReference refCurrenPost=getRef(i);
-                String post_id=refCurrenPost.getKey().toString();
+                DatabaseReference refCurrenPost = getRef(i);
+                String post_id = refCurrenPost.getKey().toString();
 
                 //binding data to the holder
-                bindingData(userID, postModel, post_viewHolder,post_id);
-
+                bindingData(userID, postModel, post_viewHolder, post_id);
 
 
             }
@@ -152,10 +157,8 @@ public class User_Own_Posts extends Fragment {
                 userModel mUser = dataSnapshot.getValue(userModel.class);
 
 
-
                 //getting time of the post from the current time
                 getPostedTime(postModel);
-
 
 
                 try {
@@ -165,7 +168,7 @@ public class User_Own_Posts extends Fragment {
                             postModel.getLocation(), mUser.getGender(), mUser.getName(),
                             mUser.getImageURL(), TimePostedOn, isAdded());
 
-                }catch ( Exception e){
+                } catch (Exception e) {
 
                 }
 
@@ -185,7 +188,7 @@ public class User_Own_Posts extends Fragment {
                         data.putString("location", postModel.getLocation());
                         data.putString("date", postModel.getDate());
                         data.putString("time", postModel.getTime());
-                        data.putString("post_id",post_id);
+                        data.putString("post_id", post_id);
 
                         //creating new createPost fragment object
                         CreatePost createPost = new CreatePost();
@@ -254,8 +257,8 @@ public class User_Own_Posts extends Fragment {
 
                         Intent sharingIntent = new Intent(Intent.ACTION_SEND);
                         sharingIntent.setType("text/plain");
-                        String shareBody = "Check this post on MyMoviePartner App:\n Title: " +postModel.getTitle()
-                                +"\nPost Description: "+postModel.getDescription();
+                        String shareBody = "Check this post on MyMoviePartner App:\n Title: " + postModel.getTitle()
+                                + "\nPost Description: " + postModel.getDescription();
                         String shareSubject = "Checkout our MyMoviePartner application from the GitHub: \n https://github.com/DavinderSinghKharoud/My-Movie-Partner";
 
                         sharingIntent.putExtra(Intent.EXTRA_TEXT, shareBody);
@@ -277,6 +280,7 @@ public class User_Own_Posts extends Fragment {
 
     /**
      * getting the time difference between the current time and the time, at which post is created
+     *
      * @param postModel
      */
     private void getPostedTime(PostModel postModel) {
@@ -297,13 +301,13 @@ public class User_Own_Posts extends Fragment {
         //setting up if condition to get the final posted time
         if (!daysDiff.equals("0")) {
             //if the post is not created on the same day
-            this.TimePostedOn ="Posted: "+ daysDiff + " day ago";
+            this.TimePostedOn = "Posted: " + daysDiff + " day ago";
         } else if (!hoursDiff.equals("0")) {
             //if the post is created not in the same hour
-            this.TimePostedOn ="Posted: "+ hoursDiff + " h ago";
+            this.TimePostedOn = "Posted: " + hoursDiff + " h ago";
         } else if (hoursDiff.equals("0")) {
             //when the post is created in the same hour, so we add the minute difference
-            this.TimePostedOn = "Posted: "+minutesDiff + " min ago";
+            this.TimePostedOn = "Posted: " + minutesDiff + " min ago";
         }
     }
 

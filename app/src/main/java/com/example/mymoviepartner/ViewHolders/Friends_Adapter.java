@@ -5,7 +5,9 @@ import android.media.Image;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -45,11 +47,13 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
         private TextView last_message;
         private ImageView img_on;
         private ImageView img_off;
+        private RelativeLayout container;
 
         public FriendsViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
 
             //getting reference
+            container = itemView.findViewById(R.id.container_friendList);
             circleImageView = itemView.findViewById(R.id.messageList_image);
             user_name = itemView.findViewById(R.id.messageList_user_name);
             last_message = itemView.findViewById(R.id.message_last_msg);
@@ -105,12 +109,16 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
     @Override
     public void onBindViewHolder(@NonNull FriendsViewHolder holder, int position) {
 
+        try {
         //getting values in the object
         FriendsModel friend = mFriendsList.get(position);
 
         //setting data in to the views
         holder.user_name.setText(friend.getUserName());
         holder.last_message.setText(friend.getLastMessage());
+
+
+        holder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_scale_animation));
 
         //getting imageURL
         String imageURl = friend.getImageUrl();
@@ -122,13 +130,17 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
                 Glide.with(mContext).load(imageURl).into(holder.circleImageView);
             }
         }
-
-        if(friend.getStatus().equals("online")){
+        if (friend.getStatus().equals("online")) {
             holder.img_on.setVisibility(View.VISIBLE);
             holder.img_off.setVisibility(View.GONE);
-        }else{
+        } else {
             holder.img_on.setVisibility(View.GONE);
             holder.img_off.setVisibility(View.VISIBLE);
+        }
+
+
+        } catch (Exception e) {
+
         }
 
 

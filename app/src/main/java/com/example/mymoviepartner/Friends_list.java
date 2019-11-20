@@ -98,15 +98,15 @@ public class Friends_list extends Fragment {
         mFriendsRef = mFirebaseDatabase.getReference("MessageRooms");
 
 
-
         //setting up progress bar
         progressBar = view.findViewById(R.id.progress_bar_friendsList);
-        progressBar.setVisibility(View.INVISIBLE);
+
 
         //setting up recycler view
         settingUpRecyclerView(view);
 
         if (checker == true) {
+            progressBar.setVisibility(View.VISIBLE);
             addChildEventListener();
             changeFriends();
 
@@ -130,18 +130,6 @@ public class Friends_list extends Fragment {
         mChildEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                //               Toast.makeText(getContext(),"assigned",Toast.LENGTH_LONG).show();
-                //fetchFriendsList();
-                /**if (change == 0) {
-                 MessageRooms room = dataSnapshot.getValue(MessageRooms.class);
-                 FriendsModel friend = new FriendsModel("default", room.getUser1(), "wow", dataSnapshot.getKey(), room.getUser2());
-                 listFriends.add(0, friend);
-                 friends_adapter.notifyDataSetChanged();
-                 }**/
-
-                //clearing the list
-                // listFriends.clear();
-                // progressBar.setVisibility(View.VISIBLE);
 
 
                 //getting messageRoom
@@ -166,7 +154,10 @@ public class Friends_list extends Fragment {
 
                 // friends_adapter.notifyDataSetChanged();
 
-                // progressBar.setVisibility(View.INVISIBLE);
+                progressBar.setVisibility(View.INVISIBLE);
+                if(listFriends.isEmpty()){
+                    emptyView.setVisibility(View.VISIBLE);
+                }
                 // changeVisibility();
             }
 
@@ -225,6 +216,15 @@ public class Friends_list extends Fragment {
 
         friends_adapter.notifyItemInserted(0);
 
+        if(listFriends.isEmpty()){
+            emptyView.setVisibility(View.VISIBLE);
+        }else{
+            emptyView.setVisibility(View.INVISIBLE);
+        }
+
+
+        progressBar.setVisibility(View.INVISIBLE);
+
         //checking the status(online/offline)
         checkStatus();
 
@@ -262,8 +262,6 @@ public class Friends_list extends Fragment {
                 friends_adapter.notifyItemChanged(index);
 
 
-
-
             }
 
             @Override
@@ -290,12 +288,7 @@ public class Friends_list extends Fragment {
 
     }
 
-    private void updateToken(String token) {
-        FirebaseUser fUser = FirebaseAuth.getInstance().getCurrentUser();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Tokens");
-        Token token1 = new Token(token);
-        reference.child(fUser.getUid()).setValue(token1);
-    }
+
 
     /**
      * getting user details
@@ -309,18 +302,22 @@ public class Friends_list extends Fragment {
         mOtherUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //getting the user details and saving in the user model
-                userModel mUser = dataSnapshot.getValue(userModel.class);
-
-                //getting user details
-                String otherUserName = mUser.getName();
-                String ImageURl = mUser.getImageURL();
+                try {
 
 
-                updateToken(FirebaseInstanceId.getInstance().getToken());
+                    //getting the user details and saving in the user model
+                    userModel mUser = dataSnapshot.getValue(userModel.class);
 
-                gettingLastMessage(messageRoomID, userId, otherUserName, ImageURl);
+                    //getting user details
+                    String otherUserName = mUser.getName();
+                    String ImageURl = mUser.getImageURL();
 
+
+
+                    gettingLastMessage(messageRoomID, userId, otherUserName, ImageURl);
+                } catch (Exception e) {
+
+                }
             }
 
             @Override
@@ -344,7 +341,7 @@ public class Friends_list extends Fragment {
 
 
             DatabaseReference mOtherUserRef = mFirebaseDatabase.getReference("Users").child(userIdFromList).child("status");
-            Query query=mOtherUserRef.equalTo("status");
+            Query query = mOtherUserRef.equalTo("status");
 
 
             final int finalIndex = index;
@@ -355,7 +352,7 @@ public class Friends_list extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     //userModel mUser = dataSnapshot.getValue(userModel.class);
 
-                   // String userID = dataSnapshot.getKey();
+                    // String userID = dataSnapshot.getKey();
 
                     String status = dataSnapshot.getValue(String.class);
 
@@ -401,18 +398,15 @@ public class Friends_list extends Fragment {
             public void onItemLongClick(View view, final int position) {
 
 
-
                 //create an AlertDialog
                 alertDialogBuilder = new AlertDialog.Builder(getContext());
-
-
 
 
                 LayoutInflater inflater2 = LayoutInflater.from(getContext());
 
                 view = inflater2.inflate(R.layout.confirmation_dialog, null);
 
-                TextView textTitle=view.findViewById(R.id.textAlert);
+                TextView textTitle = view.findViewById(R.id.textAlert);
                 textTitle.setText("Delete Chat?");
 
                 Button noButton = (Button) view.findViewById(R.id.nobtn);
