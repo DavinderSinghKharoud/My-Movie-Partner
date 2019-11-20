@@ -369,31 +369,36 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                     //getting user id
                     String userId = item.getUser_id();
 
-                    DatabaseReference specificUser = userRef.child(userId);
+                    try {
 
-                    specificUser.addValueEventListener(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            //getting the user details and saving in the user model
-                            userModel mUser = dataSnapshot.getValue(userModel.class);
-                            String userName = mUser.getName().toLowerCase().trim();
-                            if (userName.contains(filterPattern)) {
-                                //adding to filter list
-                                filteredList.add(item);
+
+                        DatabaseReference specificUser = userRef.child(userId);
+
+                        specificUser.addValueEventListener(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                //getting the user details and saving in the user model
+                                userModel mUser = dataSnapshot.getValue(userModel.class);
+                                String userName = mUser.getName().toLowerCase().trim();
+                                if (userName.contains(filterPattern)) {
+                                    //adding to filter list
+                                    filteredList.add(item);
+                                }
+
+                                mPostList.clear();
+                                mPostList.addAll(filteredList);
+                                notifyDataSetChanged();
                             }
 
-                            mPostList.clear();
-                            mPostList.addAll(filteredList);
-                            notifyDataSetChanged();
-                        }
 
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-
-                        }
-                    });
-
+                            }
+                        });
+                    } catch (Exception e) {
+                        Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
+                    }
 
                 }
             }
@@ -451,6 +456,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                 notifyDataSetChanged();
             } catch (Exception e) {
 
+                Toast.makeText(context, e.toString(), Toast.LENGTH_SHORT).show();
             }
 
         }

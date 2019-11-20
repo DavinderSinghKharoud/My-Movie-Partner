@@ -289,7 +289,6 @@ public class MessageScreen extends Fragment {
                     apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
                         @Override
                         public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                            Toast.makeText(getContext(), String.valueOf(response.code()), Toast.LENGTH_SHORT).show();
                             if (response.code() == 200) {
 
                                 if (response.body().success != 1) {
