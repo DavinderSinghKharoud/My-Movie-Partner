@@ -340,8 +340,8 @@ public class Friends_list extends Fragment {
             String userIdFromList = friendsModel.getUserID();
 
 
-            DatabaseReference mOtherUserRef = mFirebaseDatabase.getReference("Users").child(userIdFromList).child("status");
-            Query query = mOtherUserRef.equalTo("status");
+            DatabaseReference mOtherUserRef = mFirebaseDatabase.getReference("Users").child(userIdFromList).child("user_status");
+            Query query = mOtherUserRef.equalTo("user_status");
 
 
             final int finalIndex = index;

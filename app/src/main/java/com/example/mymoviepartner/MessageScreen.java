@@ -202,7 +202,7 @@ public class MessageScreen extends Fragment {
                     //setting his name in the title
                     getActivity().setTitle(OtherUserName);
 
-                    String status = user.getStatus();
+                    String status = user.getUser_status();
 
                     if (status.equals("online")) {
                         user_status.setVisibility(View.VISIBLE);
