@@ -7,7 +7,7 @@ public class FriendsModel {
     private String lastMessage;
     private String RoomID;
     private String userID;
-    private String status;
+    private String user_status;
 
     public FriendsModel() {
     }
@@ -18,15 +18,15 @@ public class FriendsModel {
         this.lastMessage = lastMessage;
         RoomID = roomID;
         this.userID = userID;
-        this.status=status;
+        this.user_status=status;
     }
 
     public String getStatus() {
-        return status;
+        return user_status;
     }
 
     public void setStatus(String status) {
-        this.status = status;
+        this.user_status = status;
     }
 
     public String getRoomID() {

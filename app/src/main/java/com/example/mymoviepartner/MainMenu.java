@@ -273,7 +273,7 @@ public class MainMenu extends AppCompatActivity implements
      */
     private void status(String status) {
         HashMap<String, Object> hashMap = new HashMap<>();
-        hashMap.put("status", status);
+        hashMap.put("user_status", status);
 
         userDetails.updateChildren(hashMap);
     }
