@@ -549,7 +549,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
         //getting database reference
         DatabaseReference userDetails = FirebaseDatabase.getInstance().getReference("Users").child(userID);
 
-        userDetails.addValueEventListener(new ValueEventListener() {
+        userDetails.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
