@@ -129,7 +129,7 @@ public class HomeFragment extends Fragment {
             @Override
             public void onChanged() {
                 super.onChanged();
-                if(listPost.isEmpty()){
+                if (listPost.isEmpty()) {
                     //Toast.makeText(getContext(),"empty",Toast.LENGTH_SHORT).show();
 
                 }
@@ -406,7 +406,7 @@ public class HomeFragment extends Fragment {
 
         android.widget.SearchView searchView = (android.widget.SearchView) myActionMenuItem.getActionView();
         searchView.setQueryHint("Search");
-       // searchView.setBackgroundColor(Color.MAGENTA);
+        // searchView.setBackgroundColor(Color.MAGENTA);
         int searchSrcTextId = getResources().getIdentifier("android:id/search_src_text", null, null);
         EditText searchEditText = (EditText) searchView.findViewById(searchSrcTextId);
         searchEditText.setTextColor(Color.WHITE);
@@ -416,9 +416,8 @@ public class HomeFragment extends Fragment {
         // Getting the 'search_plate' LinearLayout.
         View searchPlate = searchView.findViewById(searchPlateId);
         // Setting background of 'search_plate' to earlier defined drawable.
-    //    searchPlate.setBackgroundResource(R.drawable.search_draw);
+        //    searchPlate.setBackgroundResource(R.drawable.search_draw);
         searchView.setIconifiedByDefault(true);
-
 
 
         int closeButtonId = getResources().getIdentifier("android:id/search_close_btn", null, null);
@@ -499,6 +498,7 @@ public class HomeFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        allPosts_adapter.notifyDataSetChanged();
     }
 
 

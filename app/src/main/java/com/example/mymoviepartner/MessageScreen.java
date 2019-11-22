@@ -159,6 +159,8 @@ public class MessageScreen extends Fragment {
         messageReadValueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                try {
+
                 messageModelList.clear();
 
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
@@ -177,6 +179,9 @@ public class MessageScreen extends Fragment {
                     }
                     view_messages_adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(view_messages_adapter);
+
+                }
+                }catch (Exception e){
 
                 }
             }

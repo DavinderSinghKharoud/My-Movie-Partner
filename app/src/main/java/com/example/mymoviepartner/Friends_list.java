@@ -212,9 +212,9 @@ public class Friends_list extends Fragment {
         Query query = mMessages.orderByChild("messageRoomID").equalTo(messageRoomId).limitToLast(1);
 
         FriendsModel friend = new FriendsModel(ImageURl, otherUserName, "", messageRoomId, OtherUserId, "offline");
-        listFriends.add(0, friend);
+        listFriends.add(friend);
 
-        friends_adapter.notifyItemInserted(0);
+        friends_adapter.notifyItemInserted(listFriends.size()-1);
 
         if(listFriends.isEmpty()){
             emptyView.setVisibility(View.VISIBLE);
@@ -232,6 +232,8 @@ public class Friends_list extends Fragment {
         query.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                try {
+
                 String lastMessage = "";
 
                 //getting message object
@@ -261,6 +263,9 @@ public class Friends_list extends Fragment {
 
                 friends_adapter.notifyItemChanged(index);
 
+                }catch (Exception e){
+
+                }
 
             }
 

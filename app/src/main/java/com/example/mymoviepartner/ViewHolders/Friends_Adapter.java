@@ -118,7 +118,7 @@ public class Friends_Adapter extends RecyclerView.Adapter<Friends_Adapter.Friend
         holder.last_message.setText(friend.getLastMessage());
 
 
-        holder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_scale_animation));
+       // holder.container.setAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fade_scale_animation));
 
         //getting imageURL
         String imageURl = friend.getImageUrl();
