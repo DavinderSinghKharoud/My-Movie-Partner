@@ -78,8 +78,6 @@ public class View_Messages_Adapter extends RecyclerView.Adapter<View_Messages_Ad
 
         if (!message.isSeen()) {
             holder.check_read.setImageResource(R.drawable.check_grey);
-        } else {
-            holder.check_read.setVisibility(View.INVISIBLE);
         }
 
     }

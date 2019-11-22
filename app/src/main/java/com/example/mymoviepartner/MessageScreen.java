@@ -4,6 +4,7 @@ package com.example.mymoviepartner;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -33,6 +34,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -73,6 +75,7 @@ public class MessageScreen extends Fragment {
     APIService apiService;
     boolean notify = false;
     private ValueEventListener userDetailsValueEventListener;
+    private ValueEventListener messageReadValueEventListener;
     //Firebase variables
 
     private View_Messages_Adapter view_messages_adapter;
@@ -118,7 +121,7 @@ public class MessageScreen extends Fragment {
         recyclerView.setLayoutManager(linearLayoutManager);
 
 
-        setUpValueEventListener();
+        setUpUserDetailsValueEventListener();
         //setting the other user name in the title
         settingActionBarTitle();
 
@@ -139,8 +142,13 @@ public class MessageScreen extends Fragment {
             }
         });
 
+
+        view_messages_adapter = new View_Messages_Adapter(getContext(), messageModelList);
+        recyclerView.setAdapter(view_messages_adapter);
+
         return view;
     }
+
 
     /**
      * getting and sending data to the viewholder
@@ -148,7 +156,7 @@ public class MessageScreen extends Fragment {
     private void readMessages(final String RoomID) {
         messageModelList = new ArrayList<>();
 
-        mRefMessages.addValueEventListener(new ValueEventListener() {
+        messageReadValueEventListener=new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 messageModelList.clear();
@@ -167,9 +175,9 @@ public class MessageScreen extends Fragment {
 
                         messageModelList.add(message);
                     }
-
-                    view_messages_adapter = new View_Messages_Adapter(getContext(), messageModelList);
+                    view_messages_adapter.notifyDataSetChanged();
                     recyclerView.setAdapter(view_messages_adapter);
+
                 }
             }
 
@@ -177,7 +185,9 @@ public class MessageScreen extends Fragment {
             public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
-        });
+        };
+
+        mRefMessages.addValueEventListener(messageReadValueEventListener);
 
 
     }
@@ -200,7 +210,7 @@ public class MessageScreen extends Fragment {
 
     }
 
-    private void setUpValueEventListener() {
+    private void setUpUserDetailsValueEventListener() {
         userDetailsValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -331,7 +341,7 @@ public class MessageScreen extends Fragment {
 
                                 } else {
 
-                                    Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                                    // Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
                                 }
                             }
                         }
@@ -355,5 +365,6 @@ public class MessageScreen extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         mRefUser.removeEventListener(userDetailsValueEventListener);
+        mRefMessages.removeEventListener(messageReadValueEventListener);
     }
 }
