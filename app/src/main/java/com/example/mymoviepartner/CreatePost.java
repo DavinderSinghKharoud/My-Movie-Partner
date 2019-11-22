@@ -275,67 +275,74 @@ public class CreatePost extends Fragment {
     private void creat_post_firebase(String userid, String post_title, String post_desc,
                                      String post_location, String post_date, String post_time) {
 
+        try {
 
-        //To get the current time in milliseconds
-        long current_time = System.currentTimeMillis();
 
-        //creating post object with all the details
-        PostModel new_post = new PostModel(userid, post_title, post_desc, post_location, post_date, post_time, current_time);
+            //To get the current time in milliseconds
+            long current_time = System.currentTimeMillis();
 
-        //generating post id
-        String post_id = post_reference.push().getKey();
+            //creating post object with all the details
+            PostModel new_post = new PostModel(userid, post_title, post_desc, post_location, post_date, post_time, current_time);
 
-        //adding the post object , inside the new post id
-        post_reference.child(post_id).setValue(new_post).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                Thread timer = new Thread() {
-                    public void run() {
-                        try {
-                            sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            progressDialog.dismiss();
+            //generating post id
+            String post_id = post_reference.push().getKey();
 
-                        }
+            //adding the post object , inside the new post id
+            post_reference.child(post_id).setValue(new_post).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+                    Thread timer = new Thread() {
+                        public void run() {
+                            try {
+                                sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                                progressDialog.dismiss();
 
-                    }
-                };
-                timer.start();
-
-                //Clearing the back stack of fragments
-                getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-                //redirecting to the home fragment
-                getFragmentManager().beginTransaction()
-                        .replace(R.id.fragment_container,
-                                new HomeFragment()).commit();
-                // Toast.makeText(getContext(), "Post created successfuly",
-                //       Toast.LENGTH_SHORT).show();
-
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Thread timer = new Thread() {
-                    public void run() {
-                        try {
-                            sleep(1000);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
-                            progressDialog.dismiss();
+                            }
 
                         }
+                    };
+                    timer.start();
 
-                    }
-                };
-                timer.start();
-                Toast.makeText(getContext(),
-                        "Post unsuccessful", Toast.LENGTH_SHORT).show();
-            }
-        });
+                    //Clearing the back stack of fragments
+                    getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+                    //redirecting to the home fragment
+                    getFragmentManager().beginTransaction()
+                            .replace(R.id.fragment_container,
+                                    new HomeFragment()).commit();
+                    // Toast.makeText(getContext(), "Post created successfuly",
+                    //       Toast.LENGTH_SHORT).show();
+
+                }
+            }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Thread timer = new Thread() {
+                        public void run() {
+                            try {
+                                sleep(1000);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                                progressDialog.dismiss();
+
+                            }
+
+                        }
+                    };
+                    timer.start();
+                    Toast.makeText(getContext(),
+                            "Post unsuccessful", Toast.LENGTH_SHORT).show();
+                }
+            });
+
+
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     /**

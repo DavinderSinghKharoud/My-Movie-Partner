@@ -156,32 +156,33 @@ public class MessageScreen extends Fragment {
     private void readMessages(final String RoomID) {
         messageModelList = new ArrayList<>();
 
-        messageReadValueEventListener=new ValueEventListener() {
+        messageReadValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
 
-                messageModelList.clear();
+                    messageModelList.clear();
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    MessageModel message = snapshot.getValue(MessageModel.class);
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        MessageModel message = snapshot.getValue(MessageModel.class);
 
 
-                    if (message.getMessageRoomID().equals(RoomID)) {
+                        if (message.getMessageRoomID().equals(RoomID)) {
 
-                        if (message.getReceiverID().equals(CurrentUserID)) {
-                            HashMap<String, Object> hashMap = new HashMap<>();
-                            hashMap.put("isSeen", true);
-                            snapshot.getRef().updateChildren(hashMap);
+                            if (message.getReceiverID().equals(CurrentUserID)) {
+                                HashMap<String, Object> hashMap = new HashMap<>();
+                                hashMap.put("isSeen", true);
+                                snapshot.getRef().updateChildren(hashMap);
+                            }
+
+                            messageModelList.add(message);
                         }
+                        view_messages_adapter.notifyDataSetChanged();
+                        recyclerView.setAdapter(view_messages_adapter);
 
-                        messageModelList.add(message);
                     }
-                    view_messages_adapter.notifyDataSetChanged();
-                    recyclerView.setAdapter(view_messages_adapter);
-
-                }
-                }catch (Exception e){
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
 
                 }
             }
@@ -252,118 +253,109 @@ public class MessageScreen extends Fragment {
      * fetching the data from the editText and saving in the database
      */
     private void sendMessage() {
-        //getting typed text
-        String messDesc = messageTyped.getText().toString();
-
-        if (TextUtils.isEmpty(messDesc)) {
-            return;
-        }
-
-        //generating message ID
-        String messageID = mRefMessages.push().getKey();
-
-        //To get the current Date and time0
-
-        Date date = new Date();
-        String timeDate = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(date);
+        try {
 
 
-        //creating message object
-        MessageModel message = new MessageModel(CurrentUserID, OtherUserID, MessageRoomID, messDesc, timeDate, false);
+            //getting typed text
+            String messDesc = messageTyped.getText().toString();
 
-        mRefMessages.child(messageID).setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-
-
-            }
-        });
-
-
-        final String msg = messDesc;
-
-
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(CurrentUserID);
-        reference.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                userModel user = dataSnapshot.getValue(userModel.class);
-                if (notify)
-                    sendNotification(OtherUserID, user.getName(), msg);
-                notify = false;
+            if (TextUtils.isEmpty(messDesc)) {
+                return;
             }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            //generating message ID
+            String messageID = mRefMessages.push().getKey();
 
-            }
-        });
-    }
+            //To get the current Date and time0
 
-    private void messageSeen() {
+            Date date = new Date();
+            String timeDate = DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT).format(date);
 
-        mRefMessages.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+            //creating message object
+            MessageModel message = new MessageModel(CurrentUserID, OtherUserID, MessageRoomID, messDesc, timeDate, false);
 
-                    MessageModel messageModel = snapshot.getValue(MessageModel.class);
-                    HashMap<String, Object> hashMap = new HashMap<>();
-                    hashMap.put("isSeen", true);
-                    snapshot.getRef().updateChildren(hashMap);
+            mRefMessages.child(messageID).setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
+                @Override
+                public void onComplete(@NonNull Task<Void> task) {
+
 
                 }
-            }
+            });
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+            final String msg = messDesc;
+
+
+            DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(CurrentUserID);
+            reference.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    userModel user = dataSnapshot.getValue(userModel.class);
+                    if (notify)
+                        sendNotification(OtherUserID, user.getName(), msg);
+                    notify = false;
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                }
+            });
+
+
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
+
 
     private void sendNotification(String otherUserID, final String name, final String msg) {
-        DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
-        Query query = tokens.orderByKey().equalTo(otherUserID);
-        query.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    Token token = snapshot.getValue(Token.class);
-                    Data data = new Data(OtherUserID, R.mipmap.ic_launcher, msg, name, CurrentUserID);
+        try {
+            DatabaseReference tokens = FirebaseDatabase.getInstance().getReference("Tokens");
+            Query query = tokens.orderByKey().equalTo(otherUserID);
+            query.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        Token token = snapshot.getValue(Token.class);
+                        Data data = new Data(OtherUserID, R.mipmap.ic_launcher, msg, name, CurrentUserID);
 
-                    Sender sender = new Sender(data, token.getToken());
+                        Sender sender = new Sender(data, token.getToken());
 
-                    apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
-                        @Override
-                        public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
-                            if (response.code() == 200) {
+                        apiService.sendNotification(sender).enqueue(new Callback<MyResponse>() {
+                            @Override
+                            public void onResponse(Call<MyResponse> call, Response<MyResponse> response) {
+                                if (response.code() == 200) {
 
-                                if (response.body().success != 1) {
+                                    if (response.body().success != 1) {
 
-                                    Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
 
-                                } else {
+                                    } else {
 
-                                    // Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                                        // Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
+                                    }
                                 }
                             }
-                        }
 
-                        @Override
-                        public void onFailure(Call<MyResponse> call, Throwable t) {
+                            @Override
+                            public void onFailure(Call<MyResponse> call, Throwable t) {
 
-                        }
-                    });
+                            }
+                        });
+                    }
                 }
-            }
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            }
-        });
+                }
+            });
+
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
     @Override

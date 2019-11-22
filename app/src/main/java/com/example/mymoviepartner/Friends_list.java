@@ -131,34 +131,40 @@ public class Friends_list extends Fragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-
-                //getting messageRoom
-                MessageRooms messageRooms = dataSnapshot.getValue(MessageRooms.class);
-
-                if (messageRooms.getUser1().equals(currentUser.getUid())
-                        || messageRooms.getUser2().equals(currentUser.getUid())) {
-
-                    if (messageRooms.getUser1().equals(currentUser.getUid())) {
-
-                        gettingOtherUserDetails(messageRooms.getUser2(), dataSnapshot.getKey());
+                try {
 
 
-                    } else {
+                    //getting messageRoom
+                    MessageRooms messageRooms = dataSnapshot.getValue(MessageRooms.class);
 
-                        gettingOtherUserDetails(messageRooms.getUser1(), dataSnapshot.getKey());
+                    if (messageRooms.getUser1().equals(currentUser.getUid())
+                            || messageRooms.getUser2().equals(currentUser.getUid())) {
+
+                        if (messageRooms.getUser1().equals(currentUser.getUid())) {
+
+                            gettingOtherUserDetails(messageRooms.getUser2(), dataSnapshot.getKey());
+
+
+                        } else {
+
+                            gettingOtherUserDetails(messageRooms.getUser1(), dataSnapshot.getKey());
+
+                        }
 
                     }
 
+
+                    // friends_adapter.notifyDataSetChanged();
+
+                    progressBar.setVisibility(View.INVISIBLE);
+                    if (listFriends.isEmpty()) {
+                        emptyView.setVisibility(View.VISIBLE);
+                    }
+                    // changeVisibility();
+
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
-
-
-                // friends_adapter.notifyDataSetChanged();
-
-                progressBar.setVisibility(View.INVISIBLE);
-                if(listFriends.isEmpty()){
-                    emptyView.setVisibility(View.VISIBLE);
-                }
-                // changeVisibility();
             }
 
             @Override
@@ -169,22 +175,27 @@ public class Friends_list extends Fragment {
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
-                String messageRoomID = dataSnapshot.getKey();
+                try {
+                    String messageRoomID = dataSnapshot.getKey();
 
-                int index = 0;
-                for (int i = 0; i < listFriends.size(); i++) {
-                    FriendsModel friendsModel = listFriends.get(i);
-                    String messageRoomIdFromFriends = friendsModel.getRoomID();
+                    int index = 0;
+                    for (int i = 0; i < listFriends.size(); i++) {
+                        FriendsModel friendsModel = listFriends.get(i);
+                        String messageRoomIdFromFriends = friendsModel.getRoomID();
 
-                    if (messageRoomID.equals(messageRoomIdFromFriends)) {
-                        listFriends.remove(index);
-                        friends_adapter.notifyItemRemoved(index);
-                        break;
-                    } else {
-                        index++;
+                        if (messageRoomID.equals(messageRoomIdFromFriends)) {
+                            listFriends.remove(index);
+                            friends_adapter.notifyItemRemoved(index);
+                            break;
+                        } else {
+                            index++;
+                        }
+
+
                     }
 
-
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -206,93 +217,96 @@ public class Friends_list extends Fragment {
      */
     private void gettingLastMessage(final String messageRoomId, final String OtherUserId, final String otherUserName, final String ImageURl) {
 
-        //getting Room reference
-        DatabaseReference mMessages = mFirebaseDatabase.getReference("Messages");
+        try {
+            //getting Room reference
+            DatabaseReference mMessages = mFirebaseDatabase.getReference("Messages");
 
-        Query query = mMessages.orderByChild("messageRoomID").equalTo(messageRoomId).limitToLast(1);
+            Query query = mMessages.orderByChild("messageRoomID").equalTo(messageRoomId).limitToLast(1);
 
-        FriendsModel friend = new FriendsModel(ImageURl, otherUserName, "", messageRoomId, OtherUserId, "offline");
-        listFriends.add(friend);
+            FriendsModel friend = new FriendsModel(ImageURl, otherUserName, "", messageRoomId, OtherUserId, "offline");
+            listFriends.add(friend);
 
-        friends_adapter.notifyItemInserted(listFriends.size()-1);
+            friends_adapter.notifyItemInserted(listFriends.size() - 1);
 
-        if(listFriends.isEmpty()){
-            emptyView.setVisibility(View.VISIBLE);
-        }else{
-            emptyView.setVisibility(View.INVISIBLE);
-        }
-
-
-        progressBar.setVisibility(View.INVISIBLE);
-
-        //checking the status(online/offline)
-        checkStatus();
-
-        String test = "";
-        query.addChildEventListener(new ChildEventListener() {
-            @Override
-            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                try {
-
-                String lastMessage = "";
-
-                //getting message object
-                MessageModel message = dataSnapshot.getValue(MessageModel.class);
+            if (listFriends.isEmpty()) {
+                emptyView.setVisibility(View.VISIBLE);
+            } else {
+                emptyView.setVisibility(View.INVISIBLE);
+            }
 
 
-                lastMessage = message.getMessageDesc();
-                String messageRoomIdFromDesc = message.getMessageRoomID();
+            progressBar.setVisibility(View.INVISIBLE);
+
+            //checking the status(online/offline)
+            checkStatus();
+
+            String test = "";
+            query.addChildEventListener(new ChildEventListener() {
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    try {
+
+                        String lastMessage = "";
+
+                        //getting message object
+                        MessageModel message = dataSnapshot.getValue(MessageModel.class);
 
 
-                int index = 0;
-                for (int i = 0; i < listFriends.size(); i++) {
-                    FriendsModel friendsModel = listFriends.get(i);
-                    String messageRoomIdFromFriends = friendsModel.getRoomID();
+                        lastMessage = message.getMessageDesc();
+                        String messageRoomIdFromDesc = message.getMessageRoomID();
 
-                    if (messageRoomIdFromDesc.equals(messageRoomIdFromFriends)) {
-                        break;
-                    } else {
-                        index++;
+
+                        int index = 0;
+                        for (int i = 0; i < listFriends.size(); i++) {
+                            FriendsModel friendsModel = listFriends.get(i);
+                            String messageRoomIdFromFriends = friendsModel.getRoomID();
+
+                            if (messageRoomIdFromDesc.equals(messageRoomIdFromFriends)) {
+                                break;
+                            } else {
+                                index++;
+                            }
+
+
+                        }
+
+
+                        listFriends.get(index).setLastMessage(lastMessage);
+
+                        friends_adapter.notifyItemChanged(index);
+
+                    } catch (Exception e) {
+
                     }
 
+                }
+
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
                 }
 
-
-                listFriends.get(index).setLastMessage(lastMessage);
-
-                friends_adapter.notifyItemChanged(index);
-
-                }catch (Exception e){
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
 
                 }
 
-            }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
 
-            @Override
-            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                }
 
-            }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
 
-            @Override
-            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-
-            }
-        });
+                }
+            });
 
 
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
-
 
 
     /**
@@ -316,7 +330,6 @@ public class Friends_list extends Fragment {
                     //getting user details
                     String otherUserName = mUser.getName();
                     String ImageURl = mUser.getImageURL();
-
 
 
                     gettingLastMessage(messageRoomID, userId, otherUserName, ImageURl);
@@ -355,16 +368,22 @@ public class Friends_list extends Fragment {
             mOtherUserRef.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    //userModel mUser = dataSnapshot.getValue(userModel.class);
+                    try {
 
-                    // String userID = dataSnapshot.getKey();
+                        //userModel mUser = dataSnapshot.getValue(userModel.class);
 
-                    String status = dataSnapshot.getValue(String.class);
+                        // String userID = dataSnapshot.getKey();
+
+                        String status = dataSnapshot.getValue(String.class);
 
 
-                    listFriends.get(finalIndex).setStatus(status);
+                        listFriends.get(finalIndex).setStatus(status);
 
-                    friends_adapter.notifyItemChanged(finalIndex);
+                        friends_adapter.notifyItemChanged(finalIndex);
+
+                    } catch (Exception e) {
+
+                    }
                 }
 
                 @Override
@@ -394,9 +413,15 @@ public class Friends_list extends Fragment {
             @Override
             public void onItemClick(int positon) {
 
-                FriendsModel friend = listFriends.get(positon);
+                try {
+                    FriendsModel friend = listFriends.get(positon);
 
-                movingMessageFragment(friend.getRoomID(), currentUser.getUid(), friend.getUserID());
+                    movingMessageFragment(friend.getRoomID(), currentUser.getUid(), friend.getUserID());
+
+
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
@@ -448,40 +473,50 @@ public class Friends_list extends Fragment {
      * @param position
      */
     private void deleteFriend(int position) {
-        FriendsModel friend = listFriends.get(position);
+        try {
 
-        // listFriends.remove(position);
-        //friends_adapter.notifyItemRemoved(position);
-        mFriendsRef.child(friend.getRoomID()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                //Toast.makeText(getContext(), "room deleted", Toast.LENGTH_LONG).show();
-            }
-        });
+            FriendsModel friend = listFriends.get(position);
 
-        changeVisibility();
-
-        //getting Room reference
-        DatabaseReference mMessages = mFirebaseDatabase.getReference("Messages");
-
-        Query query = mMessages.orderByChild("messageRoomID").equalTo(friend.getRoomID());
-
-        query.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot message : dataSnapshot.getChildren()) {
-                    message.getRef().removeValue();
+            // listFriends.remove(position);
+            //friends_adapter.notifyItemRemoved(position);
+            mFriendsRef.child(friend.getRoomID()).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+                @Override
+                public void onSuccess(Void aVoid) {
+                    //Toast.makeText(getContext(), "room deleted", Toast.LENGTH_LONG).show();
                 }
-            }
+            });
 
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
+            changeVisibility();
 
-                Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
-            }
-        });
+            //getting Room reference
+            DatabaseReference mMessages = mFirebaseDatabase.getReference("Messages");
+
+            Query query = mMessages.orderByChild("messageRoomID").equalTo(friend.getRoomID());
+
+            query.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for (DataSnapshot message : dataSnapshot.getChildren()) {
+                        message.getRef().removeValue();
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                    Toast.makeText(getContext(), databaseError.toString(), Toast.LENGTH_LONG).show();
+                }
+            });
+
+
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
     }
 
+    /**
+     * Displaying the empty text view
+     */
     private void changeVisibility() {
         if (listFriends.size() == 0) {
             recyclerView.setVisibility(View.GONE);
@@ -531,17 +566,6 @@ public class Friends_list extends Fragment {
         mFriendsRef.removeEventListener(mChildEventListener);
     }
 
-
-    private void adapterCheck() {
-        friends_adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-
-                checkEmpty();
-            }
-        });
-    }
 
     void checkEmpty() {
         emptyView.setVisibility(friends_adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);

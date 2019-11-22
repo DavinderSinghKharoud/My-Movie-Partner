@@ -353,22 +353,28 @@ public class HomeFragment extends Fragment {
      */
     private void movingMessageFragment(String RoomID, String fUserID, String otherUserID) {
 
-        MessageScreen messageScreen = new MessageScreen();
+        try {
 
-        //creating bundle and adding data
-        Bundle bundle = new Bundle();
-        bundle.putString("home", "home");
-        bundle.putString("RoomID", RoomID);
-        bundle.putString("fUserID", fUserID);
-        bundle.putString("otherUserID", otherUserID);
 
-        messageScreen.setArguments(bundle);
+            MessageScreen messageScreen = new MessageScreen();
 
-        //Adding again the home fragment and replacing it with message fragment
-        getFragmentManager().beginTransaction()
-                .addToBackStack(null)
-                .replace(R.id.fragment_container,
-                        messageScreen).commit();
+            //creating bundle and adding data
+            Bundle bundle = new Bundle();
+            bundle.putString("home", "home");
+            bundle.putString("RoomID", RoomID);
+            bundle.putString("fUserID", fUserID);
+            bundle.putString("otherUserID", otherUserID);
+
+            messageScreen.setArguments(bundle);
+
+            //Adding again the home fragment and replacing it with message fragment
+            getFragmentManager().beginTransaction()
+                    .addToBackStack(null)
+                    .replace(R.id.fragment_container,
+                            messageScreen).commit();
+        }catch (Exception e){
+
+        }
     }
 
 
