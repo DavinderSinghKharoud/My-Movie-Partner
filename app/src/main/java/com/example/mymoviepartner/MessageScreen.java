@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -44,6 +45,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import retrofit2.Call;
@@ -115,6 +117,7 @@ public class MessageScreen extends Fragment {
         linearLayoutManager.setStackFromEnd(true);
         recyclerView.setLayoutManager(linearLayoutManager);
 
+
         setUpValueEventListener();
         //setting the other user name in the title
         settingActionBarTitle();
@@ -153,7 +156,15 @@ public class MessageScreen extends Fragment {
                 for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                     MessageModel message = snapshot.getValue(MessageModel.class);
 
+
                     if (message.getMessageRoomID().equals(RoomID)) {
+
+                        if (message.getReceiverID().equals(CurrentUserID)) {
+                            HashMap<String, Object> hashMap = new HashMap<>();
+                            hashMap.put("isSeen", true);
+                            snapshot.getRef().updateChildren(hashMap);
+                        }
+
                         messageModelList.add(message);
                     }
 
@@ -189,8 +200,8 @@ public class MessageScreen extends Fragment {
 
     }
 
-    private void setUpValueEventListener(){
-        userDetailsValueEventListener=new ValueEventListener() {
+    private void setUpValueEventListener() {
+        userDetailsValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 try {
@@ -243,7 +254,7 @@ public class MessageScreen extends Fragment {
 
 
         //creating message object
-        MessageModel message = new MessageModel(CurrentUserID, OtherUserID, MessageRoomID, messDesc, timeDate);
+        MessageModel message = new MessageModel(CurrentUserID, OtherUserID, MessageRoomID, messDesc, timeDate, false);
 
         mRefMessages.child(messageID).setValue(message).addOnCompleteListener(new OnCompleteListener<Void>() {
             @Override
@@ -257,7 +268,7 @@ public class MessageScreen extends Fragment {
         final String msg = messDesc;
 
 
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(OtherUserID);
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference("Users").child(CurrentUserID);
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -265,6 +276,29 @@ public class MessageScreen extends Fragment {
                 if (notify)
                     sendNotification(OtherUserID, user.getName(), msg);
                 notify = false;
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void messageSeen() {
+
+        mRefMessages.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+
+                    MessageModel messageModel = snapshot.getValue(MessageModel.class);
+                    HashMap<String, Object> hashMap = new HashMap<>();
+                    hashMap.put("isSeen", true);
+                    snapshot.getRef().updateChildren(hashMap);
+
+                }
             }
 
             @Override
@@ -295,7 +329,7 @@ public class MessageScreen extends Fragment {
 
                                     Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
 
-                                }else{
+                                } else {
 
                                     Toast.makeText(getContext(), "success", Toast.LENGTH_SHORT).show();
                                 }

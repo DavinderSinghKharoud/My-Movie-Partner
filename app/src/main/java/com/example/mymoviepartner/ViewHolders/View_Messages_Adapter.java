@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -38,6 +39,7 @@ public class View_Messages_Adapter extends RecyclerView.Adapter<View_Messages_Ad
         private View mView;
         private TextView show_messages;
         private TextView show_time;
+        private ImageView check_read;
 
 
         public messageViewHolder(@NonNull View itemView) {
@@ -45,7 +47,8 @@ public class View_Messages_Adapter extends RecyclerView.Adapter<View_Messages_Ad
             mView = itemView;
             //referencing
             show_messages = mView.findViewById(R.id.show_message);
-            show_time=mView.findViewById(R.id.chat_time);
+            show_time = mView.findViewById(R.id.chat_time);
+            check_read = mView.findViewById(R.id.check);
         }
     }
 
@@ -73,7 +76,15 @@ public class View_Messages_Adapter extends RecyclerView.Adapter<View_Messages_Ad
         holder.show_messages.setText(message.getMessageDesc());
         holder.show_time.setText(String.valueOf(message.getTime_stamp()));
 
+        if (!message.isSeen()) {
+            holder.check_read.setImageResource(R.drawable.check_grey);
+        } else {
+            holder.check_read.setVisibility(View.INVISIBLE);
+        }
+
     }
+
+
 
     @Override
     public int getItemCount() {
