@@ -116,7 +116,6 @@ public class Friends_list extends Fragment {
 
         }
 
-
     }
 
 
@@ -236,6 +235,7 @@ public class Friends_list extends Fragment {
 
 
             progressBar.setVisibility(View.INVISIBLE);
+
 
             //checking the status(online/offline)
             checkStatus();
@@ -359,7 +359,6 @@ public class Friends_list extends Fragment {
 
 
             DatabaseReference mOtherUserRef = mFirebaseDatabase.getReference("Users").child(userIdFromList).child("user_status");
-            Query query = mOtherUserRef.equalTo("user_status");
 
 
             final int finalIndex = index;
@@ -370,9 +369,6 @@ public class Friends_list extends Fragment {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     try {
 
-                        //userModel mUser = dataSnapshot.getValue(userModel.class);
-
-                        // String userID = dataSnapshot.getKey();
 
                         String status = dataSnapshot.getValue(String.class);
 
@@ -496,8 +492,15 @@ public class Friends_list extends Fragment {
             query.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    for (DataSnapshot message : dataSnapshot.getChildren()) {
-                        message.getRef().removeValue();
+
+                    try {
+
+
+                        for (DataSnapshot message : dataSnapshot.getChildren()) {
+                            message.getRef().removeValue();
+                        }
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                     }
                 }
 
@@ -570,6 +573,7 @@ public class Friends_list extends Fragment {
     void checkEmpty() {
         emptyView.setVisibility(friends_adapter.getItemCount() == 0 ? View.VISIBLE : View.GONE);
     }
+
 
     @Override
     public void onResume() {

@@ -49,6 +49,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.lang.reflect.Field;
+import java.security.spec.ECField;
 import java.util.ArrayList;
 
 
@@ -146,19 +147,25 @@ public class HomeFragment extends Fragment {
         mValueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                //clearing the list
-                listPost.clear();
+                try {
 
-                for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
 
-                    PostModel postModel = postSnapshot.getValue(PostModel.class);
-                    listPost.add(postModel);
+                    //clearing the list
+                    listPost.clear();
+
+                    for (DataSnapshot postSnapshot : dataSnapshot.getChildren()) {
+
+                        PostModel postModel = postSnapshot.getValue(PostModel.class);
+                        listPost.add(postModel);
+                    }
+                    copyList = new ArrayList<>(listPost);
+                    allPosts_adapter.notifyDataSetChanged();
+
+                    //dismissing the progress bar
+                    progressBar.setVisibility(View.INVISIBLE);
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
-                copyList = new ArrayList<>(listPost);
-                allPosts_adapter.notifyDataSetChanged();
-
-                //dismissing the progress bar
-                progressBar.setVisibility(View.INVISIBLE);
             }
 
             @Override
@@ -289,49 +296,55 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
 
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                try {
 
-                    //getting messageRoom in the messageRoom object
-                    MessageRooms messageRooms = snapshot.getValue(MessageRooms.class);
-                    //getting currentUserID
-                    String currentUserUid = currentUser.getUid();
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
 
-                    if ((messageRooms.getUser1().equals(currentUserUid) && messageRooms.getUser2().equals(postCreaterID))
-                            || (messageRooms.getUser1().equals(postCreaterID) && messageRooms.getUser2().equals(currentUserUid))) {
+                        //getting messageRoom in the messageRoom object
+                        MessageRooms messageRooms = snapshot.getValue(MessageRooms.class);
+                        //getting currentUserID
+                        String currentUserUid = currentUser.getUid();
 
-                        //geting room id
-                        RoomID = snapshot.getKey();
-                        //setting again to default, just to getting all the logic
-                        RoomID = "default";
-                        //moving to another fragment with the messageRoomID
-                        movingMessageFragment(snapshot.getKey(), currentUserUid, postCreaterID);
-                        return;
+                        if ((messageRooms.getUser1().equals(currentUserUid) && messageRooms.getUser2().equals(postCreaterID))
+                                || (messageRooms.getUser1().equals(postCreaterID) && messageRooms.getUser2().equals(currentUserUid))) {
 
-                    }
-
-
-                }
-
-                if (RoomID.equals("default")) {
-                    //creating room ID
-                    final String roomID = mRoomRef.push().getKey();
-                    //creating messageRoom
-                    MessageRooms creatingMessageRoom = new MessageRooms(currentUser.getUid(), postCreaterID);
-                    mRoomRef.child(roomID).setValue(creatingMessageRoom).addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-
-
-                            //getting room id
-                            RoomID = roomID;
+                            //geting room id
+                            RoomID = snapshot.getKey();
                             //setting again to default, just to getting all the logic
                             RoomID = "default";
                             //moving to another fragment with the messageRoomID
-                            movingMessageFragment(roomID, currentUser.getUid(), postCreaterID);
+                            movingMessageFragment(snapshot.getKey(), currentUserUid, postCreaterID);
                             return;
-                        }
-                    });
 
+                        }
+
+
+                    }
+
+                    if (RoomID.equals("default")) {
+                        //creating room ID
+                        final String roomID = mRoomRef.push().getKey();
+                        //creating messageRoom
+                        MessageRooms creatingMessageRoom = new MessageRooms(currentUser.getUid(), postCreaterID);
+                        mRoomRef.child(roomID).setValue(creatingMessageRoom).addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+
+
+                                //getting room id
+                                RoomID = roomID;
+                                //setting again to default, just to getting all the logic
+                                RoomID = "default";
+                                //moving to another fragment with the messageRoomID
+                                movingMessageFragment(roomID, currentUser.getUid(), postCreaterID);
+                                return;
+                            }
+                        });
+
+                    }
+
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
 
 
@@ -372,7 +385,7 @@ public class HomeFragment extends Fragment {
                     .addToBackStack(null)
                     .replace(R.id.fragment_container,
                             messageScreen).commit();
-        }catch (Exception e){
+        } catch (Exception e) {
 
         }
     }
@@ -404,90 +417,94 @@ public class HomeFragment extends Fragment {
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
 
-        //inflating the search field
-        inflater.inflate(R.menu.search_menu, menu);
+        try {
+            //inflating the search field
+            inflater.inflate(R.menu.search_menu, menu);
 
-        MenuItem myActionMenuItem = menu.findItem(R.id.action_search1);
-
-
-        android.widget.SearchView searchView = (android.widget.SearchView) myActionMenuItem.getActionView();
-        searchView.setQueryHint("Search");
-        // searchView.setBackgroundColor(Color.MAGENTA);
-        int searchSrcTextId = getResources().getIdentifier("android:id/search_src_text", null, null);
-        EditText searchEditText = (EditText) searchView.findViewById(searchSrcTextId);
-        searchEditText.setTextColor(Color.WHITE);
-        searchEditText.setHintTextColor(Color.WHITE);
-
-        int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
-        // Getting the 'search_plate' LinearLayout.
-        View searchPlate = searchView.findViewById(searchPlateId);
-        // Setting background of 'search_plate' to earlier defined drawable.
-        //    searchPlate.setBackgroundResource(R.drawable.search_draw);
-        searchView.setIconifiedByDefault(true);
+            MenuItem myActionMenuItem = menu.findItem(R.id.action_search1);
 
 
-        int closeButtonId = getResources().getIdentifier("android:id/search_close_btn", null, null);
-        ImageView closeButtonImage = (ImageView) searchView.findViewById(closeButtonId);
-        closeButtonImage.setImageResource(R.drawable.ic_close_black_24dp);
+            android.widget.SearchView searchView = (android.widget.SearchView) myActionMenuItem.getActionView();
+            searchView.setQueryHint("Search");
+            // searchView.setBackgroundColor(Color.MAGENTA);
+            int searchSrcTextId = getResources().getIdentifier("android:id/search_src_text", null, null);
+            EditText searchEditText = (EditText) searchView.findViewById(searchSrcTextId);
+            searchEditText.setTextColor(Color.WHITE);
+            searchEditText.setHintTextColor(Color.WHITE);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
+            int searchPlateId = searchView.getContext().getResources().getIdentifier("android:id/search_plate", null, null);
+            // Getting the 'search_plate' LinearLayout.
+            View searchPlate = searchView.findViewById(searchPlateId);
+            // Setting background of 'search_plate' to earlier defined drawable.
+            //    searchPlate.setBackgroundResource(R.drawable.search_draw);
+            searchView.setIconifiedByDefault(true);
 
-                //getting drop down item selected
-                Integer index = spinner.getSelectedItemPosition();
+
+            int closeButtonId = getResources().getIdentifier("android:id/search_close_btn", null, null);
+            ImageView closeButtonImage = (ImageView) searchView.findViewById(closeButtonId);
+            closeButtonImage.setImageResource(R.drawable.ic_close_black_24dp);
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+
+                    //getting drop down item selected
+                    Integer index = spinner.getSelectedItemPosition();
 
 
-                if (index == 1) {
-                    //By userName
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getUserNameFilter().filter(query);
-                } else if (index == 2) {
-                    //By location
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getLocationFilter().filter(query);
+                    if (index == 1) {
+                        //By userName
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getUserNameFilter().filter(query);
+                    } else if (index == 2) {
+                        //By location
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getLocationFilter().filter(query);
 
-                } else if (index == 3) {
-                    //By Gender
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getGenderFilter().filter(query);
-                } else {
-                    //By default(title)
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getFilter().filter(query);
+                    } else if (index == 3) {
+                        //By Gender
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getGenderFilter().filter(query);
+                    } else {
+                        //By default(title)
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getFilter().filter(query);
+                    }
+                    return true;
                 }
-                return true;
-            }
 
-            @Override
-            public boolean onQueryTextChange(String newText) {
-                //getting drop down item selected
-                Integer index = spinner.getSelectedItemPosition();
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    //getting drop down item selected
+                    Integer index = spinner.getSelectedItemPosition();
 
 
-                if (index == 1) {
-                    //By userName
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getUserNameFilter().filter(newText);
-                } else if (index == 2) {
-                    //By location
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getLocationFilter().filter(newText);
+                    if (index == 1) {
+                        //By userName
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getUserNameFilter().filter(newText);
+                    } else if (index == 2) {
+                        //By location
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getLocationFilter().filter(newText);
 
-                } else if (index == 3) {
-                    //By Gender
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getGenderFilter().filter(newText);
-                } else {
-                    //By default(title)
-                    allPosts_adapter.setmPostListFull(copyList);
-                    allPosts_adapter.getFilter().filter(newText);
+                    } else if (index == 3) {
+                        //By Gender
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getGenderFilter().filter(newText);
+                    } else {
+                        //By default(title)
+                        allPosts_adapter.setmPostListFull(copyList);
+                        allPosts_adapter.getFilter().filter(newText);
+                    }
+                    return true;
                 }
-                return true;
-            }
-        });
+            });
 
-        super.onCreateOptionsMenu(menu, inflater);
+            super.onCreateOptionsMenu(menu, inflater);
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+        }
 
     }
 

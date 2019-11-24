@@ -154,14 +154,14 @@ public class User_Own_Posts extends Fragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 //getting the user details and saving in the user model
-                userModel mUser = dataSnapshot.getValue(userModel.class);
-
-
-                //getting time of the post from the current time
-                getPostedTime(postModel);
-
-
                 try {
+                    userModel mUser = dataSnapshot.getValue(userModel.class);
+
+
+                    //getting time of the post from the current time
+                    getPostedTime(postModel);
+
+
                     //sending the values to the post holder, so that they can be setup in the views.
                     post_viewHolder.setDetails(getContext(), postModel.getTitle(),
                             postModel.getDescription(), postModel.getDate(), postModel.getTime(),
@@ -169,7 +169,7 @@ public class User_Own_Posts extends Fragment {
                             mUser.getImageURL(), TimePostedOn, isAdded());
 
                 } catch (Exception e) {
-
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
 
 

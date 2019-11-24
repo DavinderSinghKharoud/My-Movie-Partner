@@ -291,10 +291,16 @@ public class MessageScreen extends Fragment {
             reference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    userModel user = dataSnapshot.getValue(userModel.class);
-                    if (notify)
-                        sendNotification(OtherUserID, user.getName(), msg);
-                    notify = false;
+                    try {
+
+
+                        userModel user = dataSnapshot.getValue(userModel.class);
+                        if (notify)
+                            sendNotification(OtherUserID, user.getName(), msg);
+                        notify = false;
+                    } catch (Exception e) {
+                        Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                    }
                 }
 
                 @Override

@@ -114,108 +114,102 @@ public class Manage_Account extends Fragment {
         if (currentUser == null) {
             return;
         }
-
-        //Setting up radio button
-        int selectedGender = mARadioGroup.getCheckedRadioButtonId();
-        mRadioButton = (RadioButton) view.findViewById(selectedGender);
-
-        //Getting values from views
-        String Name = mName.getText().toString();
-        String password = mPassword.getText().toString();
-        //String confirmPassword=mConfirmPassword.getText().toString();
-        String email = mEmail.getText().toString();
-        //Getting selected gender
-        Gender = mRadioButton.getText().toString();
-
-        //Updating details in the database
         try {
-            userDetails.child("name").setValue(Name);
-            userDetails.child("gender").setValue(Gender);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+            //Setting up radio button
+            int selectedGender = mARadioGroup.getCheckedRadioButtonId();
+            mRadioButton = (RadioButton) view.findViewById(selectedGender);
 
+            //Getting values from views
+            String Name = mName.getText().toString();
+            String password = mPassword.getText().toString();
+            //String confirmPassword=mConfirmPassword.getText().toString();
+            String email = mEmail.getText().toString();
+            //Getting selected gender
+            Gender = mRadioButton.getText().toString();
 
-        //Checking whether email is following all the rules or not
-        if (TextUtils.isEmpty(email)) {
-            Toast.makeText(getContext(), "Please enter your e-mail", Toast.LENGTH_LONG).show();
-            return;
-        }
-        if (!email.contains("@") || !email.contains(".")) {
-            Toast.makeText(getContext(), "Incorrect e-mail ID", Toast.LENGTH_LONG).show();
-            return;
-        }
-
-        //updating email of current user.
-        currentUser.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
-            @Override
-            public void onComplete(@NonNull Task<Void> task) {
-                // Toast.makeText(getContext(),"Email updated",Toast.LENGTH_SHORT).show();
-
-                try {
-
-                    Toast.makeText(getContext(), "Registration successful, please check " +
-                            "your email for verification", Toast.LENGTH_LONG).show();
-
-                    currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Void> task) {
-
-
-                            getActivity().finish();
-
-                        }
-                    });
-
-                } catch (Exception e) {
-
-                }
-
-
-
+            //Updating details in the database
+            try {
+                userDetails.child("name").setValue(Name);
+                userDetails.child("gender").setValue(Gender);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        });
 
 
-        //Checking whether password is following all the rules or not
-        if (!TextUtils.isEmpty(password)) {
-
-
-            if (password.length() < 7) {
-                Toast.makeText(getContext(), "Password must be 7 characters long",
-                        Toast.LENGTH_LONG).show();
+            //Checking whether email is following all the rules or not
+            if (TextUtils.isEmpty(email)) {
+                Toast.makeText(getContext(), "Please enter your e-mail", Toast.LENGTH_LONG).show();
                 return;
             }
-        /*if(TextUtils.isEmpty(confirmPassword)){
-            Toast.makeText(getContext(),"Confirm password field is empty",Toast.LENGTH_LONG).show();
-            return;
-        }*/
-        /*if(!confirmPassword.equals(password)){
-            Toast.makeText(getContext(),"Password Fields are not same",Toast.LENGTH_LONG).show();
-            return;
-        }*/
+            if (!email.contains("@") || !email.contains(".")) {
+                Toast.makeText(getContext(), "Incorrect e-mail ID", Toast.LENGTH_LONG).show();
+                return;
+            }
 
-
-            //updating current user password
-            currentUser.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
+            //updating email of current user.
+            currentUser.updateEmail(email).addOnCompleteListener(new OnCompleteListener<Void>() {
                 @Override
                 public void onComplete(@NonNull Task<Void> task) {
+                    // Toast.makeText(getContext(),"Email updated",Toast.LENGTH_SHORT).show();
 
-                    //Toast.makeText(getContext(),"password updated",Toast.LENGTH_SHORT).show();
+                    try {
+
+                        Toast.makeText(getContext(), "Registration successful, please check " +
+                                "your email for verification", Toast.LENGTH_LONG).show();
+
+                        currentUser.sendEmailVerification().addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+
+
+                                getActivity().finish();
+
+                            }
+                        });
+
+                    } catch (Exception e) {
+
+                    }
+
+
                 }
             });
+
+
+            //Checking whether password is following all the rules or not
+            if (!TextUtils.isEmpty(password)) {
+
+
+                if (password.length() < 7) {
+                    Toast.makeText(getContext(), "Password must be 7 characters long",
+                            Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+
+                //updating current user password
+                currentUser.updatePassword(password).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+
+                        //Toast.makeText(getContext(),"password updated",Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            Toast.makeText(getContext(), "Information updated",
+                    Toast.LENGTH_SHORT).show();
+
+            //Clearing the back stack of fragments
+            getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+
+            //redirecting to the home fragment
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.fragment_container,
+                            new HomeFragment()).commit();
+
+        } catch (Exception e) {
+            Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
-        Toast.makeText(getContext(), "Information updated",
-                Toast.LENGTH_SHORT).show();
-
-        //Clearing the back stack of fragments
-        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
-
-        //redirecting to the home fragment
-        getFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container,
-                        new HomeFragment()).commit();
-
     }
 
     /**

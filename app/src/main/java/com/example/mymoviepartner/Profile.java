@@ -176,10 +176,9 @@ public class Profile extends Fragment {
                         progressDialog.show();
                         progressDialog.setCancelable(false);
 
-                        final String userID=fUser.getUid();
+                        final String userID = fUser.getUid();
 
                         deleteUserDetails(userID);
-
 
 
                     }
@@ -247,8 +246,14 @@ public class Profile extends Fragment {
         query.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    snapshot.getRef().removeValue();
+                try {
+
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -263,8 +268,14 @@ public class Profile extends Fragment {
         mRooms.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    snapshot.getRef().removeValue();
+                try {
+
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -275,11 +286,17 @@ public class Profile extends Fragment {
         });
 
         Query mRooms1 = message_rooms.orderByChild("user2").equalTo(userID);
-        mRooms.addListenerForSingleValueEvent(new ValueEventListener() {
+        mRooms1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    snapshot.getRef().removeValue();
+                try {
+
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -289,12 +306,18 @@ public class Profile extends Fragment {
             }
         });
 
-        Query messageQuery=mMessages.orderByChild("senderID").equalTo(userID);
+        Query messageQuery = mMessages.orderByChild("senderID").equalTo(userID);
         messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    snapshot.getRef().removeValue();
+                try {
+
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -304,14 +327,19 @@ public class Profile extends Fragment {
             }
         });
 
-        Query messageQuery1=mMessages.orderByChild("receiverID").equalTo(userID);
-        messageQuery.addListenerForSingleValueEvent(new ValueEventListener() {
+        Query messageQuery1 = mMessages.orderByChild("receiverID").equalTo(userID);
+        messageQuery1.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                    snapshot.getRef().removeValue();
-                }
+                try {
 
+
+                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
+                        snapshot.getRef().removeValue();
+                    }
+                } catch (Exception e) {
+                    Toast.makeText(getContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                }
                 progressDialog.dismiss();
             }
 

@@ -163,8 +163,6 @@ public class Login extends Fragment {
                             if (mAuth.getCurrentUser().isEmailVerified()){
 
                                 progressBar.setVisibility(View.INVISIBLE);
-                                //  FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                                //fragmentTransaction.replace(R.id.mainActivity_layout, new MainMenu()).commit();
                                 Intent intent = new Intent(getActivity(), MainMenu.class);
                                 startActivity(intent);
                                 getActivity().finish();

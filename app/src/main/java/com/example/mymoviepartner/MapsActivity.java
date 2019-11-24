@@ -127,7 +127,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 gMap.clear();
                 gMap.addMarker(new MarkerOptions().position(latLng).title(address.getAddressLine(0) + ", " + address.getCountryName()));
                 gMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
-                Toast.makeText(getApplicationContext(), address.getLatitude() + " " + address.getLongitude(), Toast.LENGTH_LONG).show();
+                // Toast.makeText(getApplicationContext(), address.getLatitude() + " " + address.getLongitude(), Toast.LENGTH_LONG).show();
             } else {
                 Toast.makeText(getApplicationContext(), "Not able to find the address", Toast.LENGTH_LONG).show();
 

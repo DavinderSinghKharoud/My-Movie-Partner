@@ -299,6 +299,9 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
             } else {
                 final String filterPattern = charSequence.toString().toLowerCase().trim();
 
+
+                final int[] index = {0};
+
                 for (final PostModel item : mPostListFull) {
                     //getting user id
                     String userId = item.getUser_id();
@@ -306,7 +309,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
                     DatabaseReference specificUser = userRef.child(userId);
 
-                    specificUser.addValueEventListener(new ValueEventListener() {
+                    specificUser.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             //getting the user details and saving in the user model
@@ -328,11 +331,16 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                             }
 
 
-                            if (filteredList.isEmpty()) {
+                            index[0] += 1;
+                            int itemCount = mPostListFull.size();
+                            if (index[0] == itemCount) {
 
-                                Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
-                                toast.setGravity(Gravity.CENTER, 0, 0);
-                                toast.show();
+                                if (((List) mPostList).isEmpty()) {
+
+                                    Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
+                                    toast.setGravity(Gravity.CENTER, 0, 0);
+                                    toast.show();
+                                }
                             }
 
                             mPostList.clear();
@@ -381,6 +389,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
             } else {
                 final String filterPattern = charSequence.toString().toLowerCase().trim();
 
+                final int[] index = {0};
                 for (final PostModel item : mPostListFull) {
                     //getting user id
                     String userId = item.getUser_id();
@@ -390,7 +399,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
 
                         DatabaseReference specificUser = userRef.child(userId);
 
-                        specificUser.addValueEventListener(new ValueEventListener() {
+                        specificUser.addListenerForSingleValueEvent(new ValueEventListener() {
                             @Override
                             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                                 //getting the user details and saving in the user model
@@ -401,9 +410,22 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
                                     filteredList.add(item);
                                 }
 
+
+                                index[0] += 1;
                                 mPostList.clear();
                                 mPostList.addAll(filteredList);
                                 notifyDataSetChanged();
+
+                                int itemCount = mPostListFull.size();
+                                if (index[0] == itemCount) {
+
+                                    if (((List) mPostList).isEmpty()) {
+
+                                        Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
+                                        toast.setGravity(Gravity.CENTER, 0, 0);
+                                        toast.show();
+                                    }
+                                }
                             }
 
 
@@ -428,12 +450,7 @@ public class allPosts_Adapter extends RecyclerView.Adapter<allPosts_Adapter.post
         @Override
         protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
             mPostList.clear();
-            if (((List)filterResults.values).isEmpty()) {
 
-                Toast toast = Toast.makeText(context, "No Posts", Toast.LENGTH_SHORT);
-                toast.setGravity(Gravity.CENTER, 0, 0);
-                toast.show();
-            }
             mPostList.addAll((List) filterResults.values);
             notifyDataSetChanged();
 

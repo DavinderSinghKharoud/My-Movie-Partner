@@ -80,19 +80,19 @@ public class ForgotPassword extends Fragment {
                     progressBar.setVisibility(View.VISIBLE);
 
                     mAuth.sendPasswordResetEmail(enter_email.getText().toString())
-                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        if(task.isSuccessful()){
-                            progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(getContext(),"Link is sent to your email",Toast.LENGTH_LONG).show();
-                        }else {
-                            progressBar.setVisibility(View.INVISIBLE);
-                            Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-            }
+                            .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Void> task) {
+                                    if(task.isSuccessful()){
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        Toast.makeText(getContext(),"Link is sent to your email",Toast.LENGTH_LONG).show();
+                                    }else {
+                                        progressBar.setVisibility(View.INVISIBLE);
+                                        Toast.makeText(getContext(),task.getException().getMessage(),Toast.LENGTH_LONG).show();
+                                    }
+                                }
+                            });
+                }
             }
         });
 
