@@ -162,7 +162,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 latitude = String.valueOf(lat);
                 longitude = String.valueOf(longi);
 
-                Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
+            //    Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
                 markLocation(lat, longi, googleMap);
 
             } else if (LocationNetwork != null) {
@@ -173,7 +173,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 longitude = String.valueOf(longi);
 
 
-                Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
                 markLocation(lat, longi, googleMap);
             } else if (LocationPassive != null) {
                 double lat = LocationPassive.getLatitude();
@@ -183,7 +183,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 longitude = String.valueOf(longi);
 
 
-                Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
+              //  Toast.makeText(this, "Your Location:" + "\n" + "Latitude= " + latitude + "\n" + "Longitude= " + longitude, Toast.LENGTH_SHORT).show();
 
                 markLocation(lat, longi, googleMap);
             } else {
