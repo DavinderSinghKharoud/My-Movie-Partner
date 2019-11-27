@@ -132,4 +132,3 @@ ___
 1. When to add the object in the recyclerView adapter, if there are more than two firebase references.
 2. Carefully, adding and removing the firebase event listeners.
 3. Sending notification to another user using retrofit library, and firebase cloud messaging.
-and more.
