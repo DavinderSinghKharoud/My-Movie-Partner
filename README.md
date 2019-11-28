@@ -10,7 +10,9 @@
 7. Spinner
 8. Radio Group
 9. Search View
-10. Animations and more.
+10. Animations
+11. Material Design
+and more.
 
 ___
 * ### Application Functions
