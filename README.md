@@ -123,7 +123,7 @@ User can simply delete his account by clicking on this option. All his details i
 ```
 i) Log out
 ```
->This feature is understandable. Since user is logged in, there needs to be log out as well.
+>This feature is understandable. Since user is logged in, there is a need to be log out as well.
 
 </p>
 
